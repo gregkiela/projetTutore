@@ -1,0 +1,22 @@
+[
+    {
+        "dep" : 1,
+        "nombre_hab": 25000
+    },
+    {
+        "dep" : 2,
+        "nombre_hab": 12000
+    },
+    {
+        "dep" : 3,
+        "nombre_hab": 18000
+    },
+    {
+        "dep" : 4,
+        "nombre_hab": 1250000
+    },
+    {
+        "dep" : 5,
+        "nombre_hab": 350000
+    }
+]

@@ -2,17 +2,7 @@
 
 include 'fonctions.php';
 
-$bdd = "gerrecart";
-$host = "localhost";
-$user = "root";
-$pass = "";
-$nomTable = "tmp";
-
-//connexion à la base de données
-$link = mysqli_connect($host, $user, $pass, $bdd) or die("Impossible de se connecter");
-
-$requete = 'SET NAMES UTF8';
-mysqli_query($link, $requete);
+$link = connexionBase();
 
 $nbFichier = $_POST['nbFichier'];
 $nbURL = $_POST['nbURL'];
@@ -22,111 +12,116 @@ $colonneChoisie = $_POST['liste'];
 $nbFichier = intval($nbFichier);
 $nbURL = intval($nbURL);
 
+$nomTable = "tmp";
+
+
+$tousLesJSON = array();
 
 if ($nbFichier > 0) {
     $fichiers = array();
     //Je vérifie que tous les fichiers sont du bon type
     for ($i = 0; $i < $nbFichier; $i++) {
         $type = $_FILES['fichier']['type'][$i];
-        if ($type != "application/vnd.ms-excel" && $type != "application/json") {
-            //header("Location: recupDonnees.php?erreur=mauvaisType");
+        if ($type != "application/vnd.ms-excel" && $type != "application/json" && $type != "application/xml") {
+            header("Location: recupDonnees.php?erreur=mauvaisType");
+        } else {
+            $tmp = array(
+                "tmp_name" => $_FILES['fichier']['tmp_name'][$i],
+            );
+            array_push($fichiers, $tmp);
         }
     }
-    //J'enregistre les informations de chaque fichiers dans un tableau
-    for ($i = 0; $i < $nbFichier; $i++) {
+    foreach ($fichiers as $fichier) {
+        $reponseDonneeRecu = gestionDonneeRecu($fichier['tmp_name'], true);
         $tmp = array(
-            "name" => $_FILES['fichier']['name'][$i],
-            "type" => $_FILES['fichier']['type'][$i],
-            "size" => $_FILES['fichier']['size'][$i],
-            "tmp_name" => $_FILES['fichier']['tmp_name'][$i],
-            "error" => $_FILES['fichier']['error'][$i],
+            'json' => $reponseDonneeRecu[0],
+            'contenu' => $reponseDonneeRecu[1],
+            'fichier' => $reponseDonneeRecu[2],
+            'nomFichier' => $fichier['tmp_name']
         );
-        array_push($fichiers, $tmp);
-        foreach ($fichiers as $fichier) {
-            $json = file_get_contents($fichier['tmp_name']);
-            $json = json_decode($json, true);
-            var_dump($json);
-        }
+        array_push($tousLesJSON, $tmp);
     }
 }
 if ($nbURL > 0) {
     $urls = array();
-
     //J'enregistre chaque URL dans un tableau
     for ($i = 0; $i < $nbURL; $i++) {
         $urls[$i] = $_POST['url' . $i];
     }
 
     foreach ($urls as $url) {
-        $json = file_get_contents($url);
-        $json = json_decode($json, true);
+        $reponseDonneeRecu = gestionDonneeRecu($url);
+        $tmp = array(
+            'json' => $reponseDonneeRecu[0],
+            'contenu' => $reponseDonneeRecu[1],
+            'fichier' => $reponseDonneeRecu[2]
+        );
+        array_push($tousLesJSON, $tmp);
     }
 }
 
-//Création de la base avec les libellé des données
-verifTable($link, $nomTable);
+$nomTables = array();
 
-$xml = false;
+$i = 0;
+foreach ($tousLesJSON as $donnee) {
 
-if (empty($json)) {
-    $formatCSV = strpos($contenuURL, ';');
-    if ($formatCSV < 50 && $formatCSV !== false) {
-        $json = (csvToJson($urlRecue));
-        $json = json_decode($json, true);
+    $json = $donnee['json'];
+    $contenu = $donnee['contenu'];
+    $fichier = $donnee['fichier'];
+
+    if (isset($donnee['nomFichier'])) {
+        $json = actionSurJson($json, $contenu, $fichier, $donnee['nomFichier']);
     } else {
-        $xml = simplexml_load_string($contenuURL);
-        $json = json_encode($xml);
-        $json = json_decode($json, true);
+        $json = actionSurJson($json, $contenu, $fichier);
     }
+
+    //En fonction du json créé on effectue diverses actions
+
+    //On récupère plusieurs informations sur les clés présentes dans le json
+    $reponseFonction = clesPresentFichier($json);
+
+    //On regarde pour chaque objet du json si les clés sont présentes
+    $presenceDesCles = $reponseFonction[0];
+
+    //On récupère les clés
+    $cles = $reponseFonction[1];
+
+    //On regarde combien il y a de clés
+    $nombreMaxCles = $reponseFonction[2];
+
+    //Ici quel objet (indice) a le plus grand nombre de clés
+    $indicePlusGrandsNombreCles = $reponseFonction[3];
+
+    //On vérifie si la table existe, si oui on la supprime
+    verifTable($link, $nomTable . $i);
+
+    //Récupération des valeurs de chaque objet json
+    $valeursObjets = valeursObjetsJson($json, $presenceDesCles, $nombreMaxCles);
+
+    //On crée la table avec les clés récupérés précedemment
+    creationTable($link, $nomTable . $i, $cles, $valeursObjets, $indicePlusGrandsNombreCles);
+
+    //On insère les valeurs récupéré dans la tablé créée
+    insertionValeurs($link, $nomTable . $i, $valeursObjets);
+
+    array_push($nomTables, $nomTable . $i);
+
+    $i++;
 }
 
-$reponseFonction = clesPresentFichier($json);
-$presenceDesCles = $reponseFonction[0];
-$cles = $reponseFonction[1];
-$nombreMaxCles = $reponseFonction[2];
-$indicePlusGrandsNombreCles = $reponseFonction[3];
+var_dump($nomTables);
 
-verifTable($link, $nomTable);
+$requeteJoin = "SELECT * FROM cadca";
 
-creationTable($link, $nomTable, $cles, $valeursObjets, $indicePlusGrandsNombreCles);
-
-insertionValeurs($link, $nomTable, $valeursObjets);
-
-//Récupérer le type de la colonne
-$requete = "SELECT COLUMN_NAME, COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$nomTable'";
-$resultat = mysqli_query($link, $requete) or die("Impossible");
-
-while ($donnees = mysqli_fetch_assoc($resultat)) {
-    if ($donnees[('COLUMN_NAME')] == $colonneChoisie) {
-        $typeColonne = $donnees[('COLUMN_TYPE')];
-    }
+foreach($nomTables as $table)
+{
+    $requeteJoin.=" INNER JOIN $table USING($colonneChoisie)";
 }
 
-$nouvelleColonne = $colonneChoisie . '2';
+verifTable($link,"total");
 
-$requeteChangerNomTable = "ALTER TABLE $nomTable CHANGE $colonneChoisie $nouvelleColonne $typeColonne";
-mysqli_query($link, $requeteChangerNomTable) or die("Impossible de modifier le nom de la colonne");
+echo $requeteJoin;
 
-$requete = "SELECT * FROM donnees INNER JOIN $nomTable ON donnees.$colonneChoisie = $nomTable.$nouvelleColonne";
+$requete = "CREATE TABLE total AS $requeteJoin";
 
-mysqli_query($link, $requete) or die("impossible45");
-
-
-$query = "SHOW TABLES LIKE 'total'";
-$result = mysqli_query($link, $query);
-$tableExists = mysqli_num_rows($result) > 0;
-if ($tableExists) {
-    $treuc = "DROP TABLE total";
-    mysqli_query($link, $treuc);
-}
-
-$requete2 = "CREATE TABLE total AS $requete";
-
-mysqli_query($link, $requete2) or die("impossible");
-
-$requete = "ALTER TABLE total DROP $nouvelleColonne";
 mysqli_query($link, $requete) or die("impossible");
-
-?>
-
-<h1>Les tables sont assemblées</h1>

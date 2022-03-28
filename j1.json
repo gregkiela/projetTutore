@@ -1,0 +1,22 @@
+[
+    {
+        "dep" : 1,
+        "ville": "Bayonne"
+    },
+    {
+        "dep" : 2,
+        "ville": "Anglet"
+    },
+    {
+        "dep" : 3,
+        "ville": "Biarritz"
+    },
+    {
+        "dep" : 4,
+        "ville": "Paris"
+    },
+    {
+        "dep" : 5,
+        "ville": "Marseille"
+    }
+]

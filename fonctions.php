@@ -1,4 +1,16 @@
 <?php
+function utf8ize($mixed)
+{
+    if (is_array($mixed)) {
+        foreach ($mixed as $key => $value) {
+            $mixed[$key] = utf8ize($value);
+        }
+    } else if (is_string($mixed)) {
+        return utf8_encode($mixed);
+    }
+    return $mixed;
+}
+
 function typeValeur($type)
 {
     $typeBD = "";
@@ -11,6 +23,9 @@ function typeValeur($type)
             break;
         case 'string':
             $typeBD = "TEXT";
+            break;
+        case 'boolean':
+            $typeBD = "BOOLEAN";
             break;
         case 'NULL':
             $typeBD = "TEXT";
@@ -62,13 +77,13 @@ function csvToJson($fname)
     // release file handle
     fclose($fp);
     // encode array to json
-    return json_encode($json);
+    return json_encode(utf8ize($json));
 }
 
 function connexionBase()
 {
     //connexion à la base de données
-    $link = mysqli_connect("localhost", "root", "", "gerrecart") or die("Impossible de se connecter");
+    $link = mysqli_connect("lakartxela.iutbayonne.univ-pau.fr", "gerrecart_pro", "gerrecart_pro", "gerrecart_pro") or die("Impossible de se connecter");
 
     $requete = 'SET NAMES UTF8';
     mysqli_query($link, $requete);
@@ -76,30 +91,27 @@ function connexionBase()
     return $link;
 }
 
-function gestionDonneeRecu()
+function gestionDonneeRecu($donnee, bool $file = false)
 {
-    if (!empty($_FILES)) {
-        $type = $_FILES['nom']['type'];
-        if ($type != "application/vnd.ms-excel" && $type != "application/json" && $type != "application/xml") {
-            header("Location: recupPremiereDonnee.php?erreur=mauvaisType");
-        }
-        $contenu = file_get_contents($_FILES['nom']['tmp_name']);
-        $json = json_decode($contenu, true);
-    } else {
-        $urlRecue = $_POST['nom'];
-        $contenu = file_get_contents($urlRecue);
-        $json = json_decode($contenu, true);
+    $contenu = file_get_contents($donnee);
+    if ($file) {
+        $file = true;
     }
+    $json = json_decode($contenu, true);
 
-    return array($json, $contenu);
+    return array($json, $contenu, $file);
 }
 
-function actionSurJson($json, $contenu)
+function actionSurJson($json, $contenu, $fichier, $nomFichier = '')
 {
     if (empty($json)) {
         $formatCSV = strpos($contenu, ';');
         if ($formatCSV < 50 && $formatCSV !== false) {
-            $json = csvToJson($_POST['nom']);
+            if ($fichier) {
+                $json = csvToJson($nomFichier);
+            } else {
+                $json = csvToJson($contenu);
+            }
             $json = json_decode($json, true);
         } else {
             $xml = simplexml_load_string($contenu);
@@ -138,7 +150,6 @@ function creationTable($lienBD, $nomTable, $cles, $valeurs, $indice)
         $requete = $requete . $suiteRequete;
     }
     $requete = $requete . " ENGINE = InnoDB DEFAULT CHARSET utf8 DEFAULT COLLATE utf8_unicode_ci;";
-    echo $requete;
     mysqli_query($lienBD, $requete) or die("Impossible de créer la table");
 }
 
@@ -223,7 +234,7 @@ function insertionValeurs($lienBD, $nomTable, $valeurs)
             if (typeValeur(gettype($valeur)) == "FLOAT") {
                 $suiteRequete = " " . str_replace('"', '\'', $valeur) . " " . $finSuiteRequete;
             } else {
-                if (is_null($valeur)) {
+                if (is_null($valeur) || $valeur == '') {
                     $suiteRequete = 'NULL' . $finSuiteRequete;
                 } else {
                     $suiteRequete = '"' . str_replace('"', '\'', $valeur) . '"' . $finSuiteRequete;

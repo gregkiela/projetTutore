@@ -1,0 +1,22 @@
+[
+    {
+        "dep" : 1,
+        "meteo": "Sunny"
+    },
+    {
+        "dep" : 2,
+        "meteo": "Clear"
+    },
+    {
+        "dep" : 3,
+        "meteo": "Cloudly"
+    },
+    {
+        "dep" : 4,
+        "meteo": "Rainy"
+    },
+    {
+        "dep" : 5,
+        "meteo": "Snow"
+    }
+]

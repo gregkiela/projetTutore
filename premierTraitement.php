@@ -18,8 +18,15 @@ set_error_handler(function ($niveau, $message, $fichier, $ligne) {
     }
 });
 
-//On analyse ce qui nous provient du formulaire
-$reponseDonneeRecu = gestionDonneeRecu();
+if (!empty($_FILES)) {
+    $type = $_FILES['nom']['type'];
+    if ($type != "application/vnd.ms-excel" && $type != "application/json" && $type != "application/xml") {
+        header("Location: recupPremiereDonnee.php?erreur=mauvaisType");
+    }
+    $reponseDonneeRecu = gestionDonneeRecu($_FILES['nom']['tmp_name'], true);
+} else {
+    $reponseDonneeRecu = gestionDonneeRecu($_POST['nom']);
+}
 
 //On récupère le json associé
 $json = $reponseDonneeRecu[0];
@@ -27,8 +34,11 @@ $json = $reponseDonneeRecu[0];
 //Et le contenu de la donnée envoyé par le formulaire
 $contenu = $reponseDonneeRecu[1];
 
+//Savoir si c'est un fichier
+$fichier = $reponseDonneeRecu[2];
+
 //En fonction du json créé on effectue diverses actions
-$json = actionSurJson($json, $contenu);
+$json = actionSurJson($json, $contenu, $fichier);
 
 //On récupère plusieurs informations sur les clés présentes dans le json
 $reponseFonction = clesPresentFichier($json);
