@@ -15,138 +15,288 @@ require_once('src/jpgraph_bar.php');
 /******************************************************/
 
 //Analyse de l'URL
-$nbConsolidation = $_GET['nbconsolidation'];
-$nbContrainte = $_GET['nbContrainte'];
-$region = $_GET['region'];
-$formalisme = $_GET['formalisme'];
+$nbConsolidation = $_GET['nbconsolidation'];//le nombre de select a faire
+$nbConsolidationOriginal= $_GET['nbconsolidation'];
+$nbContrainte = $_GET['nbContrainte'];//le nombre de WHERE/GROUP BY/ORDER BY a faire
+$nbContrainteOriginal = $_GET['nbContrainte'];
+$formalisme = $_GET['formalisme'];//le formalisme souhaité
+$nomTable = "Departements";//le nom de la table de la base de donnée
 
-$tabConsolidation= array();
-$tabConsolidationMod = array();
-$tabContraintes= array();
-$tabContraintesMod= array();
-$tabWhere=array();
+$variableJointure="code";
+
+$tabConsolidation= array();//contient toutes les recherches du select
+$tabConsolidationMod = array();//contient les modalités de recherche du select
+$tabConsolidationOriginal= array();
+$tabConsolidationModOriginal= array();
+$tabContraintes= array();//contient toutes les variables soumisent a contrainte
+$tabContraintesMod= array();//contient les modalités de ces contraintes
+$tabWhere=array();//contient la comparaison des comparaison "where"
+$tabWhereValeur=array();
+
+//on recupere toutes les consolidations
 for($i=0;$i<$nbConsolidation;$i++)
 {
 	array_push($tabConsolidation,$_GET['Consolidation'.$i]);
 	array_push($tabConsolidationMod,$_GET['ConsolidationMod'.$i]);
+	array_push($tabConsolidationOriginal,$_GET['Consolidation'.$i]);
+	array_push($tabConsolidationModOriginal,$_GET['ConsolidationMod'.$i]);
 }
 
+$possedeUnGroupBy=false;
+$insertDeVariableDansSelect=0;
+
+//on recupere toutes les contraintes
 for($i=0;$i<$nbContrainte;$i++)
 {
 	array_push($tabContraintes,$_GET['Contrainte'.$i]);
 	array_push($tabContraintesMod,$_GET['ContrainteMod'.$i]);
+	//si la contrainte est un where
 	if($tabContraintesMod[$i]=="WHERE")
 	{
-		$tabWhere[$i]=$_GET['Comparaison'.$i].$_GET['Valeur'.$i];
+		$tabWhere[$i]=$_GET['Comparaison'.$i];
+		$tabWhereValeur[$i]=$_GET['Valeur'.$i];//on ajoute au tableau la maniére de comapraison
+	}
+	else if($tabContraintesMod[$i]=="GROUP BY")
+	{
+		$possedeUnGroupBy=true;
+		$groupByEstDansWhere=false;
+		for($j=0;$j<$nbConsolidation;$j++)
+		{
+			if($tabConsolidation[$j]==$tabContraintes[$i])
+			{
+				$groupByEstDansWhere=true;
+			}
+		}
+		if(!$groupByEstDansWhere)
+		{
+			array_push($tabConsolidation,$tabContraintes[$i]);
+			array_push($tabConsolidationMod," ");
+			$nbConsolidation++;
+		}
 	}
 }
 
-var_dump($tabConsolidation);
-var_dump($tabConsolidationMod);
-var_dump($tabContraintes);
-var_dump($tabContraintesMod);
-var_dump($tabWhere);
+//on démarre la séléction
+$chaine="SELECT ";
 
-/*
+//on concaténe toutes les recherches du select avec leurs modes de recherche et on intégre dans le tableau des GROUP BY les attributs du select qui n'y sont pas
+for($i=0;$i<$nbConsolidation;$i++)
+{
+	if($tabConsolidationMod[$i]==" ")
+	{
+		$chaine.="$tabConsolidation[$i]";
+	}
+	else
+	{
+		$chaine.="$tabConsolidationMod[$i]($tabConsolidation[$i])";
+	}
+	if($i<$nbConsolidation-1)
+	{
+		$chaine.=",";
+	}
+	if($possedeUnGroupBy)
+	{
+		//on intégre dans le tableau des GROUP BY les attributs du select qui n'y sont pas
+		$trouveGroupBy=false;
+		for($j=0;$j<$nbContrainte;$j++)
+		{
+			if($tabContraintesMod[$j]=="GROUP BY" && $tabContraintes[$j]==$tabConsolidation[$i])
+			{
+				$trouveGroupBy=true;
+				$j=$nbContrainte;
+			}
+		}
+	
+		if(!$trouveGroupBy)
+		{
+			array_push($tabContraintes,$tabConsolidation[$i]);
+			array_push($tabContraintesMod,"GROUP BY");
+			$nbContrainte++;
+		}
+	}
+}
+
+
+
+//on ajoute le from à la requete
+$chaine.=" FROM $nomTable ";
+
+//on ajoute tout les where
+$nbWhere=0;
+
+//on parcours le tableau de contraintes
+for($i=0;$i<$nbContrainte;$i++)
+{
+	//si la contrainte est un where
+	if($tabContraintesMod[$i]=="WHERE")
+	{
+		//on la concaténe avec son mode de comparaison
+		if($nbWhere==0)
+		{
+			$chaine.="WHERE $tabContraintes[$i] $tabWhere[$i] \"$tabWhereValeur[$i]\"";
+		}
+		else
+		{
+			$chaine.=" AND $tabContraintes[$i] $tabWhere[$i] \"$tabWhereValeur[$i]\""." ";
+		}
+		$nbWhere++;
+	}
+}
+
+//on ajoute tout les group by
+$nbGroupBy=0;
+
+//on parcours toutes les contraintes
+for($i=0;$i<$nbContrainte;$i++)
+{
+	//si la contrainte est un group by
+	if($tabContraintesMod[$i]=="GROUP BY")
+	{
+		//on la concaténe avec sa variable attitrée
+		if($nbGroupBy==0)
+		{
+			$chaine.=" GROUP BY $tabContraintes[$i]";
+		}
+		else
+		{
+			$chaine.=",$tabContraintes[$i]";
+		}
+		$nbGroupBy++;
+	}
+}
+
+//on ajoute tout les orders by
+$nbOrderBy=0;
+
+//on parcours le tableau
+for($i=0;$i<$nbContrainte;$i++)
+{
+	//si la contrainte est un order by
+	if($tabContraintesMod[$i]=="ORDER BY")
+	{
+		//on la concaténe a la requete avec sa variable attitrée
+		if($nbOrderBy==0)
+		{
+			$chaine.=" ORDER BY $tabContraintes[$i]";
+		}
+		else
+		{
+			$chaine.=",$tabContraintes[$i]";
+		}
+		$nbOrderBy++;
+	}
+}
+
+$chaine.=";";
+
+
 switch ($formalisme) {
 	case "Diagramme en secteur":
-		DiagrammeSecteur($parametre1, $parametre2, $parametre3,$typeDonnees);
+		DiagrammeSecteur($chaine,$tabConsolidation,$tabConsolidationMod,$nbConsolidation,$tabContraintes,$tabContraintesMod,$tabWhere,$nbContrainte,$tabConsolidationOriginal,$tabConsolidationModOriginal,$nbConsolidationOriginal);
 		break;
 
 	case "Diagramme en barre":
-		DiagrammeBarre($parametre1, $parametre2, $parametre3,$typeDonnees);
+		DiagrammeBarre($chaine,$tabConsolidation,$tabConsolidationMod,$nbConsolidation,$tabContraintes,$tabContraintesMod,$tabWhere,$nbContrainte,$tabConsolidationOriginal,$tabConsolidationModOriginal,$nbConsolidationOriginal);
 		break;
 
 	default:
 		echo "Pas de fonction associé a ce choix";
 		break;
-}*/
+}
 
 /********************************************************/
 /****************LES FONCTIONS DE GRAPHES****************/
 /********************************************************/
 
-function DiagrammeBarre($parametre1, $parametre2, $parametre3, $typeDonnees)
+function DiagrammeBarre($requete,$tabConsolidation,$tabConsolidationMod,$nbConsolidation,$tabContraintes,$tabContraintesMod,$tabWhere,$nbContrainte,$tabConsolidationOriginal,$tabConsolidationModOriginal,$nbConsolidationOriginal)
 {
 	//appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
 	$link = connexion_Base();
-	$par1 = $parametre1;
-	$par2 = $parametre2;
-	$par3 = $parametre3;
-	$type=$typeDonnees;
+
 	
 	//requete recuperant les valeurs de la base de données
 	$nomTable = "Departements";
 
-if($type=="int-int" || $type=="int-varchar")
-{
-	$reponse = "SELECT $par1,$par2 FROM $nomTable WHERE region='$par3' ORDER BY $par2";
-	$result = mysqli_query($link, $reponse) or die("selection impossible 1");
-
-	if ($par3 == "region") {
-		$reponse = "SELECT SUM($par1),$par3 FROM $nomTable GROUP BY $par3";
-		$result = mysqli_query($link, $reponse) or die("selection impossible 2");
-	}
+	$result = mysqli_query($link, $requete) or die("selection impossible 2");
 
 	// Definir les données
 	$dataPar1 = array();
 	$dataPar2 = array();
 
-	while ($donnees = mysqli_fetch_assoc($result)) {
-		if ($par3 == "region") {
-			array_push($dataPar1, $donnees["SUM($par1)"]);
-			array_push($dataPar2, $donnees["$par3"]);
-		} else {
-			array_push($dataPar1, $donnees["$par1"]);
-			array_push($dataPar2, $donnees["$par2"]);
+	$tabArray= array();
+	$tabX=array();
+	$tabY=array();
+	
+	$nbElement=0;
+	while ($donnees = mysqli_fetch_assoc($result)) 
+	{
+		for($i=0;$i<$nbConsolidationOriginal;$i++)
+		{
+			$tabArray[$i][$nbElement]=$donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"];
+		}
+		$nbElement++;
+	}
+	
+	$result = mysqli_query($link, $requete) or die("selection impossible 2");
+	
+	$trouveLaEnBasLa=false;
+	for($i=0;$i<$nbContrainte;$i++)
+	{
+		if($tabContraintesMod[$i]=="GROUP BY")
+		{
+			while ($donnees = mysqli_fetch_assoc($result)) 
+			{
+				array_push($dataPar2,$donnees["$tabContraintes[$i]"]);
+			}
+			$trouveLaEnBasLa=true;
 		}
 	}
-}
-else if($type=="varchar-varchar")
-{
-	$reponse = "SELECT $par1,$par2 FROM $nomTable WHERE region='$par3' ORDER BY $par2";
-	$result = mysqli_query($link, $reponse) or die("selection impossible 1");
-
-	if ($par3 == "region") {
-		$reponse = "SELECT COUNT($par1),$par3 FROM $nomTable GROUP BY $par3";
-		$result = mysqli_query($link, $reponse) or die("selection impossible 2");
+	
+	for($i=15,$j=0;$i<$nbElement;$i=$i+30,$j=$j+30)
+	{
+		array_push($tabX,$i);
+		array_push($tabY,$j);
 	}
-
-	// Definir les données
-	$dataPar1 = array();
-	$dataPar2 = array();
-
-	while ($donnees = mysqli_fetch_assoc($result)) {
-		if ($par3 == "region") {
-			array_push($dataPar1, $donnees["COUNT($par1)"]);
-			array_push($dataPar2, $donnees["$par3"]);
-		} else {
-			array_push($dataPar1, $donnees["$par1"]);
-			array_push($dataPar2, $donnees["$par2"]);
-		}
-	}
-}
+	
+	;
 	// Créer le graphe
-	$graph = new Graph(2500, 800, 'auto');
+	$graph = new Graph(10000,1000,'auto');
 	$graph->SetScale("textlin");
-	$graph->SetShadow();
-	$graph->SetMargin(60, 60, 60, 60);
 
-	//On définit les axes
+	$theme_class=new UniversalTheme;
+	$graph->SetTheme($theme_class);
+
+	$graph->yaxis->SetTickPositions($tabX,$tabY);
+	$graph->SetBox(false);
+
+	$graph->ygrid->SetFill(false);
 	$graph->xaxis->SetTickLabels($dataPar2);
-	$graph->xaxis->title->Set(ucfirst($par2));
-	$graph->yaxis->title->Set(ucfirst($par1));
+	$graph->yaxis->HideLine(false);
+	$graph->yaxis->HideTicks(false,false);
 
-	//Définir un titre pour le graphe
-	$graph->title->Set(ucfirst($par1)." en fonction du ".ucfirst($par2)." dans la region ".$par3);
+	// Create the bar plots
+	$b1plot = new BarPlot($tabArray[0]);
+	$b2plot = new BarPlot($tabArray[1]);
 
-	//Modéliser le graphe
-	$bplot = new BarPlot($dataPar1);
-	$graph->Add($bplot);
+	$tabFinal= new GroupBarPlot(array($b1plot,$b2plot));
+	
+	// ...and add it to the graPH
+	$graph->Add($tabFinal);
 
-	//Afficher
+	
+	$b1plot->SetColor("white");
+	$b1plot->SetFillColor("#cc1111");
+
+	$b2plot->SetColor("white");
+	$b2plot->SetFillColor("#11cccc");
+
+
+	$graph->title->Set("Bar Plots");
+
+	// Display the graph
 	$graph->Stroke();
-}
+
+	}
 
 function DiagrammeSecteur($parametre1, $parametre2, $parametre3, $typeDonnees)
 {
