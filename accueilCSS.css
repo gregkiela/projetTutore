@@ -1,0 +1,229 @@
+*{
+    margin: auto;
+}
+
+.contenu{
+    background-color: rgb(30, 30, 30);
+    height: 970px;
+}
+
+button{
+    cursor: pointer;
+}
+
+.contenu h3{
+  font-size: 15px;
+  color: rgb(110, 209, 110);
+}
+
+input{
+  cursor: text;
+}
+
+input[type=button]{
+  cursor: pointer;
+}
+
+input[type=submit]{
+  cursor: pointer;
+}
+
+select{
+  cursor: default;
+}
+
+.lesSelections{
+    text-align: center;
+    position: relative;
+    top: 100px;
+    width: 700px;
+    font-size: 20px;
+    color: white;
+    padding-top: 70px; 
+    padding-bottom: 110px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border: 3px solid white;
+    border-radius: 30px;
+    background-color: rgb(22, 22, 22);
+    box-shadow: 30px 20px 100px white;
+  }
+
+.lesSelections input, .lesSelections select{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+  .rideau{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 135px;  
+    background: rgb(0, 0, 0);
+    animation-duration: 5s;
+    animation-name: slidein;
+    z-index: 1;
+}
+
+.rideau h1{
+    height: 10%;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    position: relative;
+    top: 30%;
+    font-family: cursive;
+    font-style: italic;
+    text-shadow: 0px 2px 2px rgb(206, 206, 206);
+    animation-duration: 5s;
+    animation-name: titre;
+}
+
+.barre{
+    position: relative;
+    top: 120px;
+    height: 5px;
+    background-color: rgb(255, 255, 255);
+    animation-duration: 5s;
+    animation-name: barre;
+}
+
+.barreFixe{
+  position: relative;
+  top: 120px;
+  height: 5px;
+  background-color: rgb(255, 255, 255);
+}
+
+.header{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 135px;  
+  background: rgb(0, 0, 0);
+}
+
+.header h1{
+  height: 10%;
+  color: white;
+  font-size: 50px;
+  text-align: center;
+  position: relative;
+  top: 30%;
+  font-family: cursive;
+  font-style: italic;
+  text-shadow: 0px 2px 2px rgb(206, 206, 206);
+  animation-duration: 5s;
+  animation-name: titre;
+}
+
+
+@keyframes 
+barre {
+  from {
+    width: 100%;
+    background: rgb(255, 255, 255);
+    margin-top: 750px;
+  }
+
+  to {
+    background: rgb(255, 255, 255);
+    margin-top: 0px;
+  }
+}
+
+
+  @keyframes 
+  slidein {
+    from {
+      width: 100%;
+      height: 100%;
+      background: rgb(15, 15, 15);
+      text-shadow: 0px 0px 0px rgb(206, 206, 206);
+    }
+  
+    to {
+        height: 135px;
+        background: rgb(0, 0, 0);
+        color: white;
+        text-shadow: 0px 2px 2px rgb(206, 206, 206);
+    }
+  }
+
+  @keyframes 
+  titre {
+    from {
+      text-shadow: 0px 0px 0px rgb(206, 206, 206);
+    }
+  
+    to {
+        color: white;
+        text-shadow: 0px 2px 2px rgb(206, 206, 206);
+    }
+  }
+
+  .cercleExt2{
+    width: 30px;
+    padding: 15px;
+    border-radius: 80px;
+    border: 2px solid white;
+    background-color: grey;
+}
+
+.cercleExt3{
+  width: 30px;
+  padding: 15px;
+  border-radius: 80px;
+  border: 2px solid white;
+  background-color: rgb(13, 88, 37);
+}
+
+.cercleExt{
+  width: 30px;
+  padding: 15px;
+  border-radius: 80px;
+  border: 2px solid white;
+  background-color: rgb(37, 179, 37);
+  animation-delay: 5s;
+  animation-duration: 15s;
+  animation-iteration-count:infinite;
+  animation-name: roue;
+}
+
+
+ @keyframes 
+  roue {
+    to {
+        transform: rotate(360deg);
+    }
+  }
+
+
+  .nomPage{
+      width: 100%;
+      text-align: center;
+      position: relative;
+      top: 200px;
+      color: white;
+  }
+
+  .texte{
+      font-size: 25px;
+      margin-left: 20px;
+      margin-top: 20px;
+    }
+
+    .petitTexte{
+      font-size: 15px;
+      margin-left: 20px;
+      margin-top: 20px;
+    }
+
+  .aligner{
+      display: inline-block;
+      margin-left: 150px;
+      margin-right: 150px;
+  }

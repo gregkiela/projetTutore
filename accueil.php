@@ -1,37 +1,5 @@
 <?php
 
-/*$bdd = "glavergne001_pro";
-$host = "lakartxela.iutbayonne.univ-pau.fr";
-$user = "glavergne001_pro";
-$pass = "glavergne001_pro";
-$nomTable="Departements";
-
-//connexion à la base de données
-$link = mysqli_connect($host, $user, $pass, $bdd) or die("impossible de se connecter");
-
-//requete recuperant les valeurs de la base de données
-$nomTable = "Departements";
-$reponse = "SELECT hospitalisation,libelle FROM $nomTable WHERE region='Occitanie' ORDER BY libelle";
-$result = mysqli_query($link, $reponse) or die("selection impossible");
-
-// Definir les données
-$dataPar1 = array();
-$dataPar2 = array();
-
-while ($donnees = mysqli_fetch_assoc($result)) {
-    array_push($dataPar1,$donnees["libelle"]);
-    array_push($dataPar2,$donnees["hospitalisation"]);
-}
-
-var_dump($dataPar1);
-var_dump($dataPar2);*/
-
-
-
-/*
-	**BASE DE DONNEE
-*/
-
 $bdd = "glavergne001_pro";
 $host = "lakartxela.iutbayonne.univ-pau.fr";
 $user = "glavergne001_pro";
@@ -241,7 +209,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						monUrl+="&ContrainteMod"+cptContr+"="+mod;
 						if(mod=="WHERE")
 						{
-							monUrl+="&Comparaison"+cptContr+"="+document.getElementById("ContrainteValeur"+cptContr).value;
+							monUrl+="&Comparaison"+cptContr+"="+tabValeur[document.getElementById("ContrainteValeur"+cptContr).value];
 							monUrl+="&Valeur"+cptContr+"="+document.getElementById("ContrainteInput"+cptContr).value;
 						}
 						cptContr++;
@@ -463,6 +431,8 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 		}
 	</script>
 
+	<link rel="stylesheet" type="text/css" href="accueilCSS.css">
+
 </head>
 
 <!------------------->
@@ -471,102 +441,135 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 
 <body onload="UpdateChoix()">
 
-	<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 1 -->
-	<form id="Saisie">
-		<div id="ZoneConsolidation" name="ZoneConsolidation">
-			<label for="ConsolidationMod0"> Je veut Consolider : </label>
-			<select name="ConsolidationMod0" id="ConsolidationMod0" onchange="UpdateChoix()">";
-
-				<?php
-				$cpt = 0;
-				while ($cpt < count($tabModalitesConsolidationLabel)) {
-					echo "<option value='$tabModalitesConsolidation[$cpt]'>" . $tabModalitesConsolidationLabel[$cpt] . "</option>";
-					$cpt++;
-				}
-				?>
-			</select>
-			<select name="Consolidation0" id="Consolidation0" onchange="UpdateChoix()">";
-
-				<?php
-				$cpt = 0;
-				while ($cpt < count($tabColonnes)) {
-					echo "<option value='$cpt'>" . $tabColonnes[$cpt] . "</option>";
-					$cpt++;
-				}
-				?>
-			</select>
-			
-		<!-- BOUTTON QUI AJOUTE UNE POSSIBILITE-->
-			<button type="button" name="bouttonConsolidation" id="bouttonConsolidation" onClick="AjouterConsolidation()">+</button>
+	<div class="contenu">
+		<div class="header">
+			<h1>Bienvenue sur AutoGraph</h1>
+			<div class="barreFixe"></div>
 		</div>
 
-		<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 2 -->
-		<div name="ZoneContrainte" id="ZoneContrainte">
-		<label for="ContrainteMod0"> En fonction de : </label>
-		<select name="ContrainteMod0" id="ContrainteMod0" onchange="UpdateChoix()">";
-
-				<?php
-				$cpt = 0;
-				while ($cpt < count($tabModalitesContraintesLabel)) {
-					echo "<option value='$tabModalitesContraintes[$cpt]'>" . $tabModalitesContraintesLabel[$cpt] . "</option>";
-					$cpt++;
-				}
-				?>
-			</select>
-			<select name="Contrainte0" id="Contrainte0" onchange="UpdateChoix()">";
-
-				<?php
-				$cpt = 0;
-				while ($cpt < count($tabColonnes)) {
-					echo "<option value='$cpt'>" . $tabColonnes[$cpt] . "</option>";
-					$cpt++;
-				}
-				?>
-			</select>
-			<select name="ContrainteValeur0" id="ContrainteValeur0" onchange="UpdateChoix()">";
-
-				<?php
-				$cpt = 0;
-				while ($cpt < count($tabValeur)) {
-					echo "<option value='$tabValeur[$cpt]'>" . $tabValeur[$cpt] . "</option>";
-					$cpt++;
-				}
-				?>
-			</select>
-			<input name="ContrainteInput0" id="ContrainteInput0"></input>
-		<!-- BOUTTON QUI AJOUTE UNE POSSIBILITE-->
-			<button type="button" name="bouttonContrainte" id="bouttonContrainte" onClick="AjouterContrainte()">+</button>
-		</div>
-
-		<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 3 -->
-		<div name="zoneRegion">
-		<label for="region"> Dans la zone : </label>
-			<select name="region" id="region" onchange="UpdateChoix()">";
-				<option value="region">Toutes les régions</option>
-				<?php
-				$cpt = 1;
-				while ($cpt < count($tabRegion)) {
-					echo "<option value='$tabRegion[$cpt]'>" . $tabRegion[$cpt] . "</option>";
-					$cpt++;
-				}
-				?>
-			</select>
-		</div>
+		<div class="nomPage">
+        <nav> 
+            <div class="aligner">
+                <div class="cercleExt3">
+                    <h1>1</h1>
+                </div>
+                <h1 class="petitTexte">Première source de données</h1>
+            </div>
+            <div class="aligner">
+                <div class="cercleExt">
+                    <h1>2</h1>
+                </div>
+                <h1 class="petitTexte">Ajout des autres sources</h1>
+            </div>
+            <div class="aligner">
+                <div class="cercleExt2">
+                    <h1>3</h1>
+                </div>
+                <h1 class="petitTexte">Création de la requête</h1>
+            </div>
+        </nav>
 		
+		<div class="lesSelections">
+			<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 1 -->
+			<form id="Saisie">
 		
-	</form>
-		
-		<!-- ZONE DE SELECTION DE LA CONSOLIDATION VOULUE -->
-		<div name="zoneChoix">
-			<select name="choixConsolidation" id="choixConsolidation">
-			</select>
-		</div>
+				<div id="ZoneConsolidation" name="ZoneConsolidation" class="ZoneConsolidation">
+					<label for="ConsolidationMod0"> Je veux consolider : </label>
+					<select name="ConsolidationMod0" id="ConsolidationMod0" onchange="UpdateChoix()">
 
-		<!-- BOUTTON PERMETTANT DE CREER UN GRAPHIQUE CELON LA VALEUR CHOISIE-->
-		<div name="boutton">
-			<button type="button" onClick="CreerGraphique()">CONSOLIDER !</button>
+						<?php
+						$cpt = 0;
+						while ($cpt < count($tabModalitesConsolidationLabel)) {
+							echo "<option value='$tabModalitesConsolidation[$cpt]'>" . $tabModalitesConsolidationLabel[$cpt] . "</option>";
+							$cpt++;
+						}
+						?>
+					</select>
+					<select name="Consolidation0" id="Consolidation0" onchange="UpdateChoix()">";
+
+						<?php
+						$cpt = 0;
+						while ($cpt < count($tabColonnes)) {
+							echo "<option value='$cpt'>" . $tabColonnes[$cpt] . "</option>";
+							$cpt++;
+						}
+						?>
+					</select>
+					
+				<!-- BOUTTON QUI AJOUTE UNE POSSIBILITE-->
+					<button type="button" name="bouttonConsolidation" id="bouttonConsolidation" onClick="AjouterConsolidation()">+</button>
+				</div>
+
+				<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 2 -->
+				<div name="ZoneContrainte" id="ZoneContrainte">
+				<label for="ContrainteMod0"> En fonction de : </label>
+				<select name="ContrainteMod0" id="ContrainteMod0" onchange="UpdateChoix()">";
+
+						<?php
+						$cpt = 0;
+						while ($cpt < count($tabModalitesContraintesLabel)) {
+							echo "<option value='$tabModalitesContraintes[$cpt]'>" . $tabModalitesContraintesLabel[$cpt] . "</option>";
+							$cpt++;
+						}
+						?>
+					</select>
+					<select name="Contrainte0" id="Contrainte0" onchange="UpdateChoix()">";
+
+						<?php
+						$cpt = 0;
+						while ($cpt < count($tabColonnes)) {
+							echo "<option value='$cpt'>" . $tabColonnes[$cpt] . "</option>";
+							$cpt++;
+						}
+						?>
+					</select>
+					<select name="ContrainteValeur0" id="ContrainteValeur0" onchange="UpdateChoix()">";
+
+						<?php
+						$cpt = 0;
+						while ($cpt < count($tabValeur)) {
+							echo "<option value='$tabValeur[$cpt]'>" . $tabValeur[$cpt] . "</option>";
+							$cpt++;
+						}
+						?>
+					</select>
+					<input name="ContrainteInput0" id="ContrainteInput0"></input>
+				<!-- BOUTTON QUI AJOUTE UNE POSSIBILITE-->
+					<button type="button" name="bouttonContrainte" id="bouttonContrainte" onClick="AjouterContrainte()">+</button>
+				</div>
+
+				<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 3 -->
+				<div name="zoneRegion">
+				<label for="region"> Dans la zone : </label>
+					<select name="region" id="region" onchange="UpdateChoix()">";
+						<option value="region">Toutes les régions</option>
+						<?php
+						$cpt = 1;
+						while ($cpt < count($tabRegion)) {
+							echo "<option value='$tabRegion[$cpt]'>" . $tabRegion[$cpt] . "</option>";
+							$cpt++;
+						}
+						?>
+					</select>
+				</div>
+				
+				
+			</form>
+				
+				<!-- ZONE DE SELECTION DE LA CONSOLIDATION VOULUE -->
+				<div name="zoneChoix">
+					<select name="choixConsolidation" id="choixConsolidation">
+					</select>
+				</div>
+
+				<!-- BOUTTON PERMETTANT DE CREER UN GRAPHIQUE CELON LA VALEUR CHOISIE-->
+				<div name="boutton">
+					<button type="button" onClick="CreerGraphique()">CONSOLIDER !</button>
+				</div>
+			<img id="img1" src="">
 		</div>
-	<img id="img1" src="">
+	</div>
+
 </body>
 
 </html>
