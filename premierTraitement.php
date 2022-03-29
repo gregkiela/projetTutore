@@ -21,11 +21,11 @@ set_error_handler(function ($niveau, $message, $fichier, $ligne) {
 if (!empty($_FILES)) {
     $type = $_FILES['nom']['type'];
     if ($type != "application/vnd.ms-excel" && $type != "application/json" && $type != "application/xml") {
-        header("Location: recupPremiereDonnee.php?erreur=mauvaisType");
+        header("Location: Accueil.php?erreur=mauvaisType");
     }
     $reponseDonneeRecu = gestionDonneeRecu($_FILES['nom']['tmp_name'], true);
 } else {
-    $reponseDonneeRecu = gestionDonneeRecu(trim($_POST['nom']));
+    $reponseDonneeRecu = gestionDonneeRecu($_POST['nom']);
 }
 
 //On récupère le json associé
@@ -74,4 +74,4 @@ $stockNomColonnes = recupNomColonnes($link, $nomTable);
 $_SESSION['nomColonnes'] = $stockNomColonnes;
 
 //On redirige vers la page suivante
-header("Location: recupDonnees.php");
+header("Location: AjoutDonnees.php");

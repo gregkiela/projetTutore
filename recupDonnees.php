@@ -7,7 +7,8 @@ $recapColonnes = $_SESSION['nomColonnes'];
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>wewewe</title>
+    <title>Ajout des autre sources</title>
+    <link rel="stylesheet" type="text/css" href="accueilCSS.css">
     <script>
         let nbURL = 1;
         let nbFichier = 0;
@@ -52,42 +53,78 @@ $recapColonnes = $_SESSION['nomColonnes'];
 </head>
 
 <body>
-    <h3>Vos données ont bien été enregistrés</h3>
-    <h4>Veuillez maintenant remplir ce formulaire</h4>
-    <h4>C:\wamp64\www\Projets\ProjetTutoré\bailleurs.json</h4>
+    <div class="contenu">
+        <div class="header">
+                <h1>Bienvenue sur AutoGraph</h1>
+                <div class="barreFixe"></div>
+            </div>
 
-    <form action="traitement.php" method="POST" enctype="multipart/form-data">
-        <div id="gestionParametreJoin">
-            <label>Choix du paramètre unique pour joindre vos données</label>
-            <select required="required" name="liste">
+            <div class="nomPage">
+            <nav> 
+                <div class="aligner">
+                    <div class="cercleExt3">
+                        <h1>✔</h1>
+                    </div>
+                    <h1 class="petitTexte">Première source de données</h1>
+                </div>
+                <div class="aligner">
+                    <div class="cercleExt">
+                        <h1>2</h1>
+                    </div>
+                    <h1 class="petitTexte">Ajout des autres sources</h1>
+                </div>
+                <div class="aligner">
+                    <div class="cercleExt2">
+                        <h1>3</h1>
+                    </div>
+                    <h1 class="petitTexte">Création de la requête</h1>
+                </div>
+                <div class="aligner">
+                    <div class="cercleExt2">
+                        <h1>4</h1>
+                    </div>
+                    <h1 class="petitTexte">Les graphes</h1>
+                </div>
+            </nav>
+
+            <div class="lesSelections">
+                <h2>Ajouter les autres sources</h2><br>
+                <h4>C:\wamp64\www\Projets\ProjetTutoré\bailleurs.json</h4>
+
+                <form action="traitement.php" method="POST" enctype="multipart/form-data">
+                    <div id="gestionParametreJoin">
+                        <label>Paramètre unique pour joindre vos données : </label>
+                        <select required="required" name="liste">
+                            <?php
+                            foreach ($recapColonnes as $colonne) {
+                                echo "<option value='" . $colonne . "'>" . $colonne . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div id="gestionURL">
+                        <div id="URL">
+                            <input hidden id="nbURL" name="nbURL" type="number" value=1>
+                            <label>Lien URL : </label> <input type="url" name="url0" required="required"><br>
+                        </div>
+                    </div>
+                    <div id="gestionFicher">
+                        <div id="fichier">
+                            <input hidden id="nbFichier" name="nbFichier" type="number" value=0>
+                        </div>
+                    </div>
+                    <button>Valider</button>
+                </form>
+                <input onclick="ajouterURL();incrementValue('nbURL');" value="Ajouter URL" type="button">
+                <input onclick="ajouterFichier(),incrementValue('nbFichier')" value="Ajouter fichier" type="button">
                 <?php
-                foreach ($recapColonnes as $colonne) {
-                    echo "<option value='" . $colonne . "'>" . $colonne . "</option>";
+                if (isset($_GET['erreur'])) {
+                    if ($_GET['erreur'] == "mauvaisType") {
+                        echo "<p>Merci de renseigner uniquement des fichiers csv ou json</p>";
+                    }
                 }
                 ?>
-            </select>
         </div>
-        <div id="gestionURL">
-            <div id="URL">
-                <input hidden id="nbURL" name="nbURL" type="number" value=1>
-                <label>URL données</label> <input type="url" name="url0" required="required"><br>
-            </div>
-        </div>
-        <div id="gestionFicher">
-            <div id="fichier">
-                <input hidden id="nbFichier" name="nbFichier" type="number" value=0>
-            </div>
-        </div>
-        <button>Valider</button>
-    </form>
-    <input onclick="ajouterURL();incrementValue('nbURL');" value="Ajouter URL" type="button">
-    <input onclick="ajouterFichier(),incrementValue('nbFichier')" value="Ajouter fichier" type="button">
-    <?php
-    if (isset($_GET['erreur'])) {
-        if ($_GET['erreur'] == "mauvaisType") {
-            echo "<p>Merci de renseigner uniquement des fichiers csv ou json</p>";
-        }
-    }
-    ?>
+    </div>
 </body>
 </html>

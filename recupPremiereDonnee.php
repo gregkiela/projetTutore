@@ -53,7 +53,6 @@
     <div class="contenu">
         <div class="rideau">
 			<h1>Bienvenue sur AutoGraph</h1>
-			<div class="barre"></div>
 		</div>
 
         <div class="nomPage">
@@ -75,6 +74,12 @@
                     <h1>3</h1>
                 </div>
                 <h1 class="petitTexte">Création de la requête</h1>
+            </div>
+            <div class="aligner">
+                <div class="cercleExt2">
+                    <h1>4</h1>
+                </div>
+                <h1 class="petitTexte">Les graphes</h1>
             </div>
         </nav>
 

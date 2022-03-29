@@ -201,7 +201,6 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			}
 			for(var cptContr=0;cptContr<tabContraintes.length;)
 			{
-
 				if(tabContraintes[cptContr]!= null)
 				{
 						var mod=document.getElementById("ContrainteMod"+cptContr).value;
@@ -210,7 +209,6 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						monUrl+="&ContrainteMod"+cptContr+"="+mod;
 						if(mod=="WHERE")
 						{
-							console.log(document.getElementById("ContrainteValeur"+cptContr).value);
 							monUrl+="&Comparaison"+cptContr+"="+tabValeur[document.getElementById("ContrainteValeur"+cptContr).value];
 							monUrl+="&Valeur"+cptContr+"="+document.getElementById("ContrainteInput"+cptContr).value;
 						}
@@ -453,21 +451,27 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
         <nav> 
             <div class="aligner">
                 <div class="cercleExt3">
-                    <h1>1</h1>
+                    <h1>✔</h1>
                 </div>
                 <h1 class="petitTexte">Première source de données</h1>
             </div>
             <div class="aligner">
-                <div class="cercleExt">
-                    <h1>2</h1>
+                <div class="cercleExt3">
+                    <h1>✔</h1>
                 </div>
                 <h1 class="petitTexte">Ajout des autres sources</h1>
             </div>
             <div class="aligner">
-                <div class="cercleExt2">
+                <div class="cercleExt">
                     <h1>3</h1>
                 </div>
                 <h1 class="petitTexte">Création de la requête</h1>
+            </div>
+			<div class="aligner">
+                <div class="cercleExt2">
+                    <h1>4</h1>
+                </div>
+                <h1 class="petitTexte">Les graphes</h1>
             </div>
         </nav>
 		
