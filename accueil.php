@@ -201,6 +201,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			}
 			for(var cptContr=0;cptContr<tabContraintes.length;)
 			{
+
 				if(tabContraintes[cptContr]!= null)
 				{
 						var mod=document.getElementById("ContrainteMod"+cptContr).value;
@@ -209,6 +210,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						monUrl+="&ContrainteMod"+cptContr+"="+mod;
 						if(mod=="WHERE")
 						{
+							console.log(document.getElementById("ContrainteValeur"+cptContr).value);
 							monUrl+="&Comparaison"+cptContr+"="+tabValeur[document.getElementById("ContrainteValeur"+cptContr).value];
 							monUrl+="&Valeur"+cptContr+"="+document.getElementById("ContrainteInput"+cptContr).value;
 						}
@@ -528,7 +530,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						<?php
 						$cpt = 0;
 						while ($cpt < count($tabValeur)) {
-							echo "<option value='$tabValeur[$cpt]'>" . $tabValeur[$cpt] . "</option>";
+							echo "<option value='$cpt'>" . $tabValeur[$cpt] . "</option>";
 							$cpt++;
 						}
 						?>
