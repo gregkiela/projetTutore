@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <title>Premières données</title>
     <link rel="stylesheet" type="text/css" href="accueilCSS.css">
+    <link rel="icon" type="image/x-icon" href="./icoo.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="./icoo.ico" />
     <script>
         var cpt = 0;
         function inputEnFonction(choix) {
@@ -92,9 +94,6 @@
 
             <div class="lesSelections">
                 <h3>CSV : https://www.data.gouv.fr/fr/datasets/r/f146c6a7-e215-4214-a250-399c6309f9a0</h3>
-                <h3>JSON : Bailleurs -> C:\wamp64\www\Projets\ProjetTutoré\bailleur.json</h3>
-                <h3>JSON : COVID -> C:\wamp64\www\Projets\ProjetTutoré\COVID.json</h3>
-                <h3>TXT : https://www.data.gouv.fr/fr/datasets/r/5129e7cf-2999-4eaf-8dd7-3bcda37bd0a3</h3>
                 <h3>XML : https://www.data.gouv.fr/fr/datasets/r/1e31b17b-c467-43a1-b0a9-20fc862911f1</h3>
                 <form action="premierTraitement.php" method="POST" enctype="multipart/form-data">
                     <label>Quelle est la source des données ?</label>
@@ -109,10 +108,12 @@
                     <?php
                     if (isset($_GET['erreur'])) {
                         if ($_GET['erreur'] == "mauvaisType") {
-                            echo "<p>Merci de renseigner uniquement des fichiers csv, json ou xml</p>";
+                            echo "<p><font color='pink'>Merci de renseigner uniquement des fichiers csv, json ou xml</font></p>";
+                            /*?><script>alert("Attention, le lien renseigné pose problème ! Veuillez réessayer.");</script><?php*/
                         }
                         if ($_GET['erreur'] == "mauvaiseURL") {
-                            echo "<p>Attention, le lien renseigné pose un problème</p>";
+                            echo "<p><font color='pink'>Attention, le lien renseigné pose un problème</font></p>";
+                            /*?><script>alert("Attention, le lien renseigné pose problème ! Veuillez réessayer.");</script><?php*/
                         }
                     }
                     ?>

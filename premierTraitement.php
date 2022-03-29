@@ -14,7 +14,7 @@ set_error_handler(function ($niveau, $message, $fichier, $ligne) {
     // echo 'Erreur dans le fichier : ' .$fichier. '<br>';
     // echo 'Emplacement de l\'erreur : ' .$ligne. '<br>';
     if ($niveau == 2) {
-        //header("Location: recupPremiereDonnee.php?erreur=mauvaiseURL");
+        header("Location: accueil.php?erreur=mauvaiseURL");
     }
 });
 

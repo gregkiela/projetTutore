@@ -9,6 +9,8 @@ $recapColonnes = $_SESSION['nomColonnes'];
     <meta charset="UTF-8">
     <title>Ajout des autre sources</title>
     <link rel="stylesheet" type="text/css" href="accueilCSS.css">
+    <link rel="icon" type="image/x-icon" href="./icoo.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="./icoo.ico" />
     <script>
         let nbURL = 1;
         let nbFichier = 0;
@@ -91,11 +93,10 @@ $recapColonnes = $_SESSION['nomColonnes'];
 
             <div class="lesSelections">
                 <h2>Ajouter les autres sources</h2><br>
-                <h4>C:\wamp64\www\Projets\ProjetTutoré\bailleurs.json</h4>
 
                 <form action="traitement.php" method="POST" enctype="multipart/form-data">
                     <div id="gestionParametreJoin">
-                        <label>Paramètre unique pour joindre vos données : </label>
+                        <label>Paramètre unique pour joindre les données : </label>
                         <select required="required" name="liste">
                             <?php
                             foreach ($recapColonnes as $colonne) {
