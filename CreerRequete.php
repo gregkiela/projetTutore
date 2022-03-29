@@ -19,8 +19,6 @@ $tabColonnesTypes = array(); //tableau contenant le type de ces colonnes
 //requete SQL permettant de recuperer le nom des colonnes et leurs types
 $reponse = $link->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$nomTable'") or die("pas de select");
 
-$tmp = "SELECT DISTINCT region from $nomTable ORDER BY region";
-$regions = mysqli_query($link, $tmp) or die("selection impossible");
 
 //on parcours la reponse
 foreach ($reponse as $donnees) {
@@ -28,10 +26,7 @@ foreach ($reponse as $donnees) {
 	array_push($tabColonnes, $donnees['COLUMN_NAME']); //on insere le nom de la colonne courante
 }
 
-$tabRegion = array();
-while ($donnees = mysqli_fetch_assoc($regions)) {
-	array_push($tabRegion, $donnees['region']);
-}
+
 $tabValeur=array("=",">","<");
 $tabModalitesConsolidationLabel=array("La somme de ","La moyenne de");
 $tabModalitesConsolidation=array("SUM","AVG");
@@ -51,7 +46,6 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 		/*
 		 **VARIABLES GLOBALES
 		 */
-		var region;//la region choisie
 		var choix; //choix de l'utilisateur concatené
 		var formalisme; //choix de formalisme de l'utilisateur
 		var tabColonnes = <?php echo json_encode($tabColonnes); ?>; //le tableau contenant les colonnes de la base
@@ -95,8 +89,11 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			//on recupere toutes les valeurs a consolider			
 			for(var i=0;i<enfantsConsolidation.length;i++)
 			{
-				tabConsolidations[(enfantsConsolidation[i].id).substr(-1)]=enfantsConsolidation[i].value;
+				const identifiant = (enfantsConsolidation[i].id).split('.');
+				tabConsolidations[identifiant[1]]=enfantsConsolidation[i].value;
 			}
+			
+			console.table(tabConsolidations);
 			
 			var cptAlternatif=0;
 			//on recupere toutes les contraintes
@@ -104,8 +101,9 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			{
 				if(cptAlternatif<2)
 				{
+					const identifiant = (enfantsContrainte[i].id).split('.');
 					cptAlternatif++;
-					tabContraintes[(enfantsContrainte[i].id).substr(-1)]=enfantsContrainte[i].value;
+					tabContraintes[identifiant[1]]=enfantsContrainte[i].value;
 				}
 				else
 				{
@@ -113,11 +111,11 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 				}
 			}
 			
+			console.table(tabContraintes);
+			
 			//on verifie les contraintes pour agir sur les contraintes
 			ajouterInputValeur();
 			
-			//region choisie
-			region = document.getElementById("Saisie").elements["region"].value; //valeur du parametre 2
 
 			//choix fait dans la liste de formalisme
 			selection = document.getElementById("choixConsolidation"); //zone de selection de l'utilisateur
@@ -186,7 +184,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			{
 				if(tabConsolidations[cptConso]!= null)
 				{
-					var mod=document.getElementById("ConsolidationMod"+cptConso).value;
+					var mod=document.getElementById("ConsolidationMod."+cptConso).value;
 					if(cptConso!=0)
 					{
 						monUrl+="&Consolidation"+cptConso+"="+tabColonnes[tabConsolidations[cptConso]];
@@ -203,21 +201,21 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			{
 				if(tabContraintes[cptContr]!= null)
 				{
-						var mod=document.getElementById("ContrainteMod"+cptContr).value;
+						var mod=document.getElementById("ContrainteMod."+cptContr).value;
 						monUrl+="&Contrainte"+cptContr+"="+tabColonnes[tabContraintes[cptContr]];
 						
 						monUrl+="&ContrainteMod"+cptContr+"="+mod;
 						if(mod=="WHERE")
 						{
-							monUrl+="&Comparaison"+cptContr+"="+tabValeur[document.getElementById("ContrainteValeur"+cptContr).value];
-							monUrl+="&Valeur"+cptContr+"="+document.getElementById("ContrainteInput"+cptContr).value;
+							monUrl+="&Comparaison"+cptContr+"="+tabValeur[document.getElementById("ContrainteValeur."+cptContr).value];
+							monUrl+="&Valeur"+cptContr+"="+document.getElementById("ContrainteInput."+cptContr).value;
 						}
 						cptContr++;
 				}
 				
 			}
 			
-			monUrl+="&region="+region+"&formalisme="+formalisme+"&nbconsolidation="+cptConso+"&nbContrainte="+cptContr;
+			monUrl+="&formalisme="+formalisme+"&nbconsolidation="+cptConso+"&nbContrainte="+cptContr;
 			alert(monUrl);
 			window.open(monUrl);
 			//document.getElementById("img1").src = monUrl;
@@ -242,24 +240,24 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			var temp=nbConsolidation;
 			bouttonSuppr.value="-";
 			bouttonSuppr.type="button";
-			bouttonSuppr.id="bouttonConsolidation"+nbConsolidation;
+			bouttonSuppr.id="bouttonConsolidation."+nbConsolidation;
 			bouttonSuppr.onclick=function(){supprimerElements(temp,"Consolidation")};
 			
 			//on creer le paragraphe
 			var paragraphe=document.createElement("label");
-			paragraphe.setAttribute("For","ConsolidationMod"+nbConsolidation);
-			paragraphe.setAttribute("id","ParagrapheConsolidation"+nbConsolidation)
+			paragraphe.setAttribute("For","ConsolidationMod."+nbConsolidation);
+			paragraphe.setAttribute("id","ParagrapheConsolidation."+nbConsolidation)
 			paragraphe.innerHTML = " et ";
 			
 			//on creer le select contenant les colonnes
 			var select = document.createElement("select");
 			select.setAttribute("onchange","UpdateChoix()");
-			select.id="Consolidation"+nbConsolidation;
+			select.id="Consolidation."+nbConsolidation;
 			
 			//on creer le select de la modalité de recupération de la valeur
 			var selectModalite = document.createElement("select");
 			selectModalite.setAttribute("onchange","UpdateChoix()");
-			selectModalite.id="ConsolidationMod"+nbConsolidation;
+			selectModalite.id="ConsolidationMod."+nbConsolidation;
 			nbConsolidation=nbConsolidation+1;
 			
 			//on remplis ces selects
@@ -294,36 +292,36 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			var bouttonSuppr = document.createElement("input");
 			bouttonSuppr.value="-";
 			bouttonSuppr.type="button";
-			bouttonSuppr.id="bouttonContrainte"+nbContrainte;
+			bouttonSuppr.id="bouttonContrainte."+nbContrainte;
 			var temp=nbContrainte;
 			bouttonSuppr.onclick=function(){supprimerElements(temp,"Contrainte")};
 			
 			//on creer le paragraphe
 			var paragraphe=document.createElement("label");
-			paragraphe.setAttribute("For","ContrainteMod"+nbContrainte);
+			paragraphe.setAttribute("For","ContrainteMod."+nbContrainte);
 			paragraphe.innerHTML = " et ";
-			paragraphe.setAttribute("id","ParagrapheContrainte"+nbContrainte);
+			paragraphe.setAttribute("id","ParagrapheContrainte."+nbContrainte);
 			
 			//on creer le select contenant les colonnes
 			var select = document.createElement("select");
 			select.setAttribute("onchange","UpdateChoix()");
-			select.id="Contrainte"+nbContrainte;
+			select.id="Contrainte."+nbContrainte;
 			
 			//on creer une zone d'input au cas ou on veut faire une comparaison par valeur
 			var inputValeur=document.createElement("input");
-			inputValeur.id="ContrainteInput"+nbContrainte;
+			inputValeur.id="ContrainteInput."+nbContrainte;
 			inputValeur.setAttribute("disabled", "disabled");		
 			
 			//on creer une liste de selection pour savoir quelle comparaison on veut effectuer
 			var selectValeur = document.createElement("select");
 			selectValeur.setAttribute("onchange","UpdateChoix()");
-			selectValeur.id="ContrainteValeur"+nbContrainte;
+			selectValeur.id="ContrainteValeur."+nbContrainte;
 			selectValeur.setAttribute("disabled", "disabled");
 			
 			//on creer le select de la modalité de recupération de la valeur
 			var selectModalite = document.createElement("select");
 			selectModalite.setAttribute("onchange","UpdateChoix()");
-			selectModalite.id="ContrainteMod"+nbContrainte;
+			selectModalite.id="ContrainteMod."+nbContrainte;
 			nbContrainte++;
 			
 			
@@ -357,7 +355,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 		{
 			var div=document.getElementById("Zone"+chaine);
 			
-			var chaineGlobal=chaine+i;
+			var chaineGlobal=chaine+"."+i;
 
 			var supprime=document.getElementById(chaineGlobal);
 			supprimerElement(supprime,div);
@@ -365,7 +363,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			var supprime=document.getElementById("Paragraphe"+chaineGlobal);
 			supprimerElement(supprime,div);
 			
-			var supprime=document.getElementById(chaine+"Mod"+i);
+			var supprime=document.getElementById(chaine+"Mod."+i);
 			supprimerElement(supprime,div);
 			
 			var supprime=document.getElementById("boutton"+chaineGlobal);
@@ -373,10 +371,10 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			
 			if(chaine=="Contrainte")
 			{
-				var supprime=document.getElementById("ContrainteInput"+i);
+				var supprime=document.getElementById("ContrainteInput."+i);
 				supprimerElement(supprime,div);
 			
-				var supprime=document.getElementById("ContrainteValeur"+i);
+				var supprime=document.getElementById("ContrainteValeur."+i);
 				supprimerElement(supprime,div);
 			}
 			UpdateChoix();
@@ -389,9 +387,9 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			{
 				if(tabContraintes[compteur]!= null)
 				{
-					var mod=document.getElementById("ContrainteMod"+compteur).value;
-					var inputVal=document.getElementById("ContrainteInput"+compteur);
-					var bouttonVal=document.getElementById("ContrainteValeur"+compteur);
+					var mod=document.getElementById("ContrainteMod."+compteur).value;
+					var inputVal=document.getElementById("ContrainteInput."+compteur);
+					var bouttonVal=document.getElementById("ContrainteValeur."+compteur);
 				
 					if(mod=="WHERE")
 					{
@@ -482,8 +480,8 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			<form id="Saisie">
 		
 				<div id="ZoneConsolidation" name="ZoneConsolidation" class="ZoneConsolidation">
-					<label for="ConsolidationMod0"> Je veux consolider : </label>
-					<select name="ConsolidationMod0" id="ConsolidationMod0" onchange="UpdateChoix()">
+					<label for="ConsolidationMod.0"> Je veux consolider : </label>
+					<select name="ConsolidationMod.0" id="ConsolidationMod.0" onchange="UpdateChoix()">
 
 						<?php
 						$cpt = 0;
@@ -493,7 +491,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						}
 						?>
 					</select>
-					<select name="Consolidation0" id="Consolidation0" onchange="UpdateChoix()">";
+					<select name="Consolidation.0" id="Consolidation.0" onchange="UpdateChoix()">";
 
 						<?php
 						$cpt = 0;
@@ -510,8 +508,8 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 
 				<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 2 -->
 				<div name="ZoneContrainte" id="ZoneContrainte">
-				<label for="ContrainteMod0"> En fonction de : </label>
-				<select name="ContrainteMod0" id="ContrainteMod0" onchange="UpdateChoix()">";
+				<label for="ContrainteMod.0"> En fonction de : </label>
+				<select name="ContrainteMod.0" id="ContrainteMod.0" onchange="UpdateChoix()">";
 
 						<?php
 						$cpt = 0;
@@ -521,7 +519,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						}
 						?>
 					</select>
-					<select name="Contrainte0" id="Contrainte0" onchange="UpdateChoix()">";
+					<select name="Contrainte.0" id="Contrainte.0" onchange="UpdateChoix()">";
 
 						<?php
 						$cpt = 0;
@@ -531,7 +529,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						}
 						?>
 					</select>
-					<select name="ContrainteValeur0" id="ContrainteValeur0" onchange="UpdateChoix()">";
+					<select name="ContrainteValeur.0" id="ContrainteValeur.0" onchange="UpdateChoix()">";
 
 						<?php
 						$cpt = 0;
@@ -541,26 +539,10 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 						}
 						?>
 					</select>
-					<input name="ContrainteInput0" id="ContrainteInput0"></input>
+					<input name="ContrainteInput.0" id="ContrainteInput.0"></input>
 				<!-- BOUTTON QUI AJOUTE UNE POSSIBILITE-->
 					<button type="button" name="bouttonContrainte" id="bouttonContrainte" onClick="AjouterContrainte()">+</button>
 				</div>
-
-				<!-- ZONE DE SELECTION DU PARAMETRE NUMERO 3 -->
-				<div name="zoneRegion">
-				<label for="region"> Dans la zone : </label>
-					<select name="region" id="region" onchange="UpdateChoix()">";
-						<option value="region">Toutes les régions</option>
-						<?php
-						$cpt = 1;
-						while ($cpt < count($tabRegion)) {
-							echo "<option value='$tabRegion[$cpt]'>" . $tabRegion[$cpt] . "</option>";
-							$cpt++;
-						}
-						?>
-					</select>
-				</div>
-				
 				
 			</form>
 				
