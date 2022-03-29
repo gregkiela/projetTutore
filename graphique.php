@@ -280,8 +280,16 @@ function DiagrammeSecteur($requete, $tabConsolidation, $tabConsolidationMod, $nb
 
 		$p[$i]->value->Show();
 
-		$p[$i]->SetSize(0.20);
-		$p[$i]->SetCenter(0.25+0.5*$i,0.5);
+		$p[$i]->SetSize(0.15);
+
+		$y = 0.20;
+		$x = 0.25+0.5*$i;
+		if($i!=0 && $i%2 == 0)
+		{
+			$y = $y + 0.4;
+			$x = 0.25;			
+		}
+		$p[$i]->SetCenter($x,$y);
 	}
 	// Use one legend for the whole graph
 	$p[0]->SetLegends($dataPar2);
