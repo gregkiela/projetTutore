@@ -432,6 +432,8 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 	</script>
 
 	<link rel="stylesheet" type="text/css" href="accueilCSS.css">
+	<link rel="icon" type="image/x-icon" href="./icoo.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="./icoo.ico" />
 
 </head>
 
