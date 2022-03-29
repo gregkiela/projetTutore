@@ -9,6 +9,7 @@ require_once('src/jpgraph_pie.php');
 require_once('src/jpgraph_pie3d.php');
 require_once('src/jpgraph.php');
 require_once('src/jpgraph_bar.php');
+require_once ('src/jpgraph_scatter.php');
 
 /******************************************************/
 /****************LES VARIABLES GLOBALES****************/
@@ -147,6 +148,10 @@ switch ($formalisme) {
 		DiagrammeBarre($chaine, $tabConsolidation, $tabConsolidationMod, $nbConsolidation, $tabContraintes, $tabContraintesMod, $tabWhere, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
 		break;
 
+	case "Nuage de points":
+		NuagePoints($chaine, $tabConsolidation, $tabConsolidationMod, $nbConsolidation, $tabContraintes, $tabContraintesMod, $tabWhere, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
+		break;
+		
 	default:
 		echo "Pas de fonction associé a ce choix";
 		break;
@@ -286,6 +291,77 @@ function DiagrammeSecteur($parametre1, $parametre2, $parametre3, $typeDonnees)
 	$p1->SetGuideLinesAdjust(1.1);
 
 	$graph->Add($p1);
+	$graph->Stroke();
+}
+
+function NuagePoints($chaine, $tabConsolidation, $tabConsolidationMod, $nbConsolidation, $tabContraintes, $tabContraintesMod, $tabWhere, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
+{
+	//appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
+	$link = connexion_Base();
+
+
+	//requete recuperant les valeurs de la base de données
+	$nomTable = "Departements";
+
+	$result = mysqli_query($link, $chaine) or die("selection impossible 2");
+
+	// Definir les données
+	$dataPar2 = array(); //Nom des colonnes en axe X
+	$tabArray = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
+
+
+	//permet de remplir le tableau 
+	
+	$tabArray=renvoieValeurSelect($result,$tabConsolidationModOriginal,$tabConsolidationOriginal,$nbConsolidationOriginal);
+
+
+	$result = mysqli_query($link, $chaine) or die("selection impossible 2");
+
+	$trouveLaEnBasLa = false;
+	for ($i = 0; $i < $nbContrainte; $i++) {
+		if ($tabContraintesMod[$i] == "GROUP BY") {
+			while ($donnees = mysqli_fetch_assoc($result)) {
+				array_push($dataPar2, $donnees["$tabContraintes[$i]"]);
+			}
+			$trouveLaEnBasLa = true;
+		}
+	};
+
+
+	// Créer le graphe
+	$tailleX=$nbConsolidationOriginal*1500;
+	$tailleY=$nbConsolidationOriginal*700;
+	
+	
+	$graph = new Graph($tailleX,$tailleY);
+	$graph->SetScale("linlin");
+ 
+	$graph->img->SetMargin(40,40,40,40);        
+	$graph->SetShadow();
+ 
+	$graph->title->Set("A simple scatter plot");
+	$graph->title->SetFont(FF_FONT1,FS_BOLD);
+
+	$tabCouleur=array('green','red','blue','green');
+	// Create the bar plots
+	for ($i = 0; $i < count($tabConsolidationOriginal); $i++) 
+	{
+		$tabx=array();
+		for($j=0;$j<count($tabArray[$i]);$j++)
+		{
+				array_push($tabx,$tabArray[$i][$j]);
+		}
+		$tabFinal=new ScatterPlot($tabx,$dataPar2);
+		$tabFinal->link->Show();
+		$tabFinal->link->SetColor($tabCouleur[$i]);
+		// ...and add it to the graPH
+		$graph->Add($tabFinal); 
+	}
+
+
+	$graph->title->Set("Scatter plot");
+
+	// Display the graph
 	$graph->Stroke();
 }
 

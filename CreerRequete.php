@@ -27,9 +27,9 @@ foreach ($reponse as $donnees) {
 }
 
 
-$tabValeur=array("=",">","<");
-$tabModalitesConsolidationLabel=array("La somme de ","La moyenne de");
-$tabModalitesConsolidation=array("SUM","AVG");
+$tabValeur=array("=",">","<","<=",">=");
+$tabModalitesConsolidationLabel=array("La somme de ","La moyenne de","Le nombre de");
+$tabModalitesConsolidation=array("SUM","AVG","COUNT");
 $tabModalitesContraintesLabel=array("Grouper par","Ordonner par","Par Valeur");
 $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 ?>
@@ -62,7 +62,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 		
 		var tabValeur=<?php echo json_encode($tabValeur); ?>
 		/** TABLEAU NECESSAIRE AFIN DE DEFINIR LES CHOIX**/
-		var tab_formalisme = ["Diagramme en barre","Diagramme en secteur"];
+		var tab_formalisme = ["Diagramme en barre","Diagramme en secteur","Nuage de points"];
 		var nbConsolidation=1;//nombre de consolidation dans le formulaire
 		var nbContrainte=1;//nombre de contrainte dans le formulaire
 		
