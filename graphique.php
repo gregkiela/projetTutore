@@ -188,15 +188,14 @@ function DiagrammeBarre($requete, $tabConsolidation, $tabConsolidationMod, $nbCo
 			$trouveLaEnBasLa = true;
 		}
 	};
-	
-	if(!$trouveLaEnBasLa)
-	{
-		while ($donnees = mysqli_fetch_assoc($result)) {
-				array_push($dataPar2, $donnees["$tabConsolidation[$i]"]);
-			}
-	}
+
+
 	// Créer le graphe
-	$graph = new Graph(2000, 800, 'auto');
+	$tailleX=$nbConsolidationOriginal*1500;
+	$tailleY=$nbConsolidationOriginal*700;
+	
+	
+	$graph = new Graph($tailleX,$tailleY, 'auto');
 	$graph->SetScale("textlin");
 
 	$theme_class = new UniversalTheme;
