@@ -21,7 +21,6 @@ $nbContrainte = $_GET['nbContrainte']; //le nombre de WHERE/GROUP BY/ORDER BY a 
 $nbContrainteOriginal = $_GET['nbContrainte'];
 $formalisme = $_GET['formalisme']; //le formalisme souhaité
 $nomTable = "Departements"; //le nom de la table de la base de donnée
-
 $variableJointure = "code";
 
 $tabConsolidation = array(); //contient toutes les recherches du select
@@ -172,15 +171,10 @@ function DiagrammeBarre($requete, $tabConsolidation, $tabConsolidationMod, $nbCo
 	$dataPar2 = array(); //Nom des colonnes en axe X
 	$tabArray = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
 
-	$nbElement = 0; //nombre d'éléments dans le tableau
 
 	//permet de remplir le tableau 
-	while ($donnees = mysqli_fetch_assoc($result)) {
-		for ($i = 0; $i < $nbConsolidationOriginal; $i++) {
-			$tabArray[$i][$nbElement] = $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"];
-		}
-		$nbElement++;
-	}
+	
+	$tabArray=renvoieValeurSelect($result,$tabConsolidationModOriginal,$tabConsolidationOriginal,$nbConsolidationOriginal);
 
 
 	$result = mysqli_query($link, $requete) or die("selection impossible 2");
@@ -194,6 +188,13 @@ function DiagrammeBarre($requete, $tabConsolidation, $tabConsolidationMod, $nbCo
 			$trouveLaEnBasLa = true;
 		}
 	};
+	
+	if(!$trouveLaEnBasLa)
+	{
+		while ($donnees = mysqli_fetch_assoc($result)) {
+				array_push($dataPar2, $donnees["$tabConsolidation[$i]"]);
+			}
+	}
 	// Créer le graphe
 	$graph = new Graph(2000, 800, 'auto');
 	$graph->SetScale("textlin");
@@ -308,4 +309,19 @@ function connexion_Base()
 
 	//retourner le lien à la base de données
 	return $link;
+}
+
+function renvoieValeurSelect($requete,$tabConsolidationModOriginal,$tabConsolidationOriginal,$nbConsolidationOriginal)
+{
+	$nbElement=0;
+	$tabArray=array();
+	
+	while ($donnees = mysqli_fetch_assoc($requete,)) {
+		for ($i = 0; $i < $nbConsolidationOriginal; $i++) {
+			$tabArray[$i][$nbElement] = $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"];
+		}
+		$nbElement++;
+	}
+	
+	return($tabArray);
 }
