@@ -51,7 +51,7 @@ if ($nbURL > 0) {
     $urls = array();
     //J'enregistre chaque URL dans un tableau
     for ($i = 0; $i < $nbURL; $i++) {
-        $urls[$i] = $_POST['url' . $i];
+        $urls[$i] = trim($_POST['url' . $i]);
     }
 
     foreach ($urls as $url) {
