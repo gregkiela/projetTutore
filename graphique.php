@@ -220,7 +220,7 @@ function DiagrammeBarre($requete, $tabConsolidation, $tabConsolidationMod, $nbCo
 	$tabFinal = new GroupBarPlot($tabBplot);
 
 	// ...and add it to the graPH
-	$graph->Add($tabFinal);
+	$graph->Add($tabFinal); 
 
 	$graph->title->Set("Bar Plots");
 
