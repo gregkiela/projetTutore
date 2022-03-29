@@ -55,6 +55,8 @@
 			<h1>Bienvenue sur AutoGraph</h1>
 		</div>
 
+        <div class="barre"></div>
+
         <div class="nomPage">
         <nav> 
             <div class="aligner">

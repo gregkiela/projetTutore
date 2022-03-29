@@ -49,7 +49,7 @@ select{
     box-shadow: 10px 7px 3px white;
   }
 
-  .lesSelections button{
+  .valider{
     border-radius: 10px;
     font-weight: bold;
     padding-top: 6px;
@@ -221,4 +221,14 @@ barre {
       display: inline-block;
       margin-left: 100px;
       margin-right: 100px;
+  }
+
+  .barre{
+    height: 6px;
+    width: 1100px;
+    border: 1px solid black;
+    background-color: rgb(255, 255, 255);
+    position: absolute;
+    top: 230px;
+    left: 440px;
   }

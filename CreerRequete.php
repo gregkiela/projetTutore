@@ -447,6 +447,8 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			<div class="barreFixe"></div>
 		</div>
 
+		<div class="barre"></div>
+
 		<div class="nomPage">
         <nav> 
             <div class="aligner">

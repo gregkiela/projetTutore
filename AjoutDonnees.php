@@ -59,6 +59,8 @@ $recapColonnes = $_SESSION['nomColonnes'];
                 <div class="barreFixe"></div>
             </div>
 
+            <div class="barre"></div>
+
             <div class="nomPage">
             <nav> 
                 <div class="aligner">
@@ -113,7 +115,7 @@ $recapColonnes = $_SESSION['nomColonnes'];
                             <input hidden id="nbFichier" name="nbFichier" type="number" value=0>
                         </div>
                     </div>
-                    <button>Valider</button>
+                    <button class="valider">Valider</button>
                 </form>
                 <input onclick="ajouterURL();incrementValue('nbURL');" value="Ajouter URL" type="button">
                 <input onclick="ajouterFichier(),incrementValue('nbFichier')" value="Ajouter fichier" type="button">
