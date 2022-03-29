@@ -25,7 +25,7 @@ if (!empty($_FILES)) {
     }
     $reponseDonneeRecu = gestionDonneeRecu($_FILES['nom']['tmp_name'], true);
 } else {
-    $reponseDonneeRecu = gestionDonneeRecu($_POST['nom']);
+    $reponseDonneeRecu = gestionDonneeRecu(trim($_POST['nom']));
 }
 
 //On récupère le json associé

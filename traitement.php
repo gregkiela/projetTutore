@@ -17,6 +17,7 @@ $nomTable = "tmp";
 
 $tousLesJSON = array();
 
+//On vérifie qu'on a reçu des fichiers
 if ($nbFichier > 0) {
     $fichiers = array();
     //Je vérifie que tous les fichiers sont du bon type
@@ -25,12 +26,14 @@ if ($nbFichier > 0) {
         if ($type != "application/vnd.ms-excel" && $type != "application/json" && $type != "application/xml") {
             header("Location: recupDonnees.php?erreur=mauvaisType");
         } else {
+            //Si oui on les met dans un tableau
             $tmp = array(
                 "tmp_name" => $_FILES['fichier']['tmp_name'][$i],
             );
             array_push($fichiers, $tmp);
         }
     }
+    //Pour chaque fichier on recupere son json, son contenu etc
     foreach ($fichiers as $fichier) {
         $reponseDonneeRecu = gestionDonneeRecu($fichier['tmp_name'], true);
         $tmp = array(
@@ -42,11 +45,13 @@ if ($nbFichier > 0) {
         array_push($tousLesJSON, $tmp);
     }
 }
+
+//Même principe pour les urls reçus
 if ($nbURL > 0) {
     $urls = array();
     //J'enregistre chaque URL dans un tableau
     for ($i = 0; $i < $nbURL; $i++) {
-        $urls[$i] = $_POST['url' . $i];
+        $urls[$i] = trim($_POST['url' . $i]);
     }
 
     foreach ($urls as $url) {
@@ -63,19 +68,19 @@ if ($nbURL > 0) {
 $nomTables = array();
 
 $i = 0;
+//Pour chaque json enregistré
 foreach ($tousLesJSON as $donnee) {
 
     $json = $donnee['json'];
     $contenu = $donnee['contenu'];
     $fichier = $donnee['fichier'];
 
+    //Action différente si c'est un fichier ou non
     if (isset($donnee['nomFichier'])) {
         $json = actionSurJson($json, $contenu, $fichier, $donnee['nomFichier']);
     } else {
         $json = actionSurJson($json, $contenu, $fichier);
     }
-
-    //En fonction du json créé on effectue diverses actions
 
     //On récupère plusieurs informations sur les clés présentes dans le json
     $reponseFonction = clesPresentFichier($json);
@@ -109,19 +114,16 @@ foreach ($tousLesJSON as $donnee) {
     $i++;
 }
 
-var_dump($nomTables);
-
+//On crée la requete pour créer une table grace a un join de toute les tables
 $requeteJoin = "SELECT * FROM cadca";
-
-foreach($nomTables as $table)
-{
-    $requeteJoin.=" INNER JOIN $table USING($colonneChoisie)";
+foreach ($nomTables as $table) {
+    //Pour chaque table on join par le parametre choisi
+    $requeteJoin .= " INNER JOIN $table USING($colonneChoisie)";
 }
 
-verifTable($link,"total");
+//On verifie la table total
+verifTable($link, "total");
 
-echo $requeteJoin;
-
+//On crée la table
 $requete = "CREATE TABLE total AS $requeteJoin";
-
 mysqli_query($link, $requete) or die("impossible");
