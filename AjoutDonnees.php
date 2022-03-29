@@ -43,11 +43,11 @@ $recapColonnes = $_SESSION['nomColonnes'];
         }
 
         function ajouterURL() {
-            ajouter("URL", "url", "URL données");
+            ajouter("URL", "url", "Lien URL : ");
         }
 
         function ajouterFichier() {
-            ajouter("fichier", "file", "Fichier Données (json ou csv)")
+            ajouter("fichier", "file", "Fichier (json ou csv) : ")
         }
     </script>
 </head>
