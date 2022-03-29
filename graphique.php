@@ -233,64 +233,63 @@ function DiagrammeBarre($requete, $tabConsolidation, $tabConsolidationMod, $nbCo
 	$graph->Stroke();
 }
 
-function DiagrammeSecteur($parametre1, $parametre2, $parametre3, $typeDonnees)
+function DiagrammeSecteur($requete, $tabConsolidation, $tabConsolidationMod, $nbConsolidation, $tabContraintes, $tabContraintesMod, $tabWhere, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
 	//appel de la fonction de connexion à la base de donnée et on recupere les deux parametres voulues
 	$link = connexion_Base();
-	$par1 = $parametre1;
-	$par2 = $parametre2;
-	$par3 = $parametre3;
-	$type = $typeDonnees;
+
 
 	//requete recuperant les valeurs de la base de données
 	$nomTable = "Departements";
 
-	// Definir les données
-	$dataPar1 = array();
-	$dataPar2 = array();
-	//ici on fait un if afin de faire une selection de données adapter celon le type des données
-	if ($type == "int-varchar" || $type == "int-int") {
-		$reponse = "SELECT $par1,$par2 FROM $nomTable WHERE region='$par3' ORDER BY $par1 ASC";
-		$result = mysqli_query($link, $reponse) or die("selection impossible");
+	$graph = new PieGraph(1200, 800);
+	$graph->SetShadow();
+	$theme_class = new UniversalTheme;
+	$graph->SetTheme($theme_class);
 
-		if ($par3 == "region") {
-			$reponse = "SELECT SUM($par1),$par3 FROM $nomTable GROUP BY $par3 ORDER BY SUM($par1) ASC";
-			$result = mysqli_query($link, $reponse) or die("selection impossible");
-		}
+	$p = array();
 
+	// Create the plots
+	for ($i = 0; $i < $nbConsolidationOriginal; ++$i) {
+		$dataPar2 = array(); //Nom des colonnes en axe X
+		$tabArray = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
 
-		while ($donnees = mysqli_fetch_assoc($result)) {
-			if ($par3 == "region") {
-				array_push($dataPar1, $donnees["SUM($par1)"]);
-				array_push($dataPar2, $donnees["$par3"]);
-			} else {
-				array_push($dataPar1, $donnees["$par1"]);
-				array_push($dataPar2, $donnees["$par2"]);
+		$requeteCourante = '';
+		for ($j = 0; $j < $nbContrainte; $j++) {
+			if ($tabContraintesMod[$j] == "GROUP BY") {
+				$requeteCourante = $requete . " ORDER BY $tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])";
+				$result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
+				while ($donnees = mysqli_fetch_assoc($result)) {
+					array_push($dataPar2, $donnees["$tabContraintes[$j]"]);
+				}
 			}
 		}
+		$result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
+
+		while ($donnees = mysqli_fetch_assoc($result)) {
+			array_push($tabArray, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
+		}
+
+		$d = "tabArray$i";
+		//sort($tabArray[$i]);;
+		$p[] = new PiePlot($tabArray);
+
+		$p[$i]->title->Set($i);
+
+		$p[$i]->SetStartAngle(90);
+
+		$p[$i]->value->Show();
+
+		$p[$i]->SetSize(0.20);
+		$p[$i]->SetCenter(0.25+0.5*$i,0.5);
 	}
+	// Use one legend for the whole graph
+	$p[0]->SetLegends($dataPar2);
+	$graph->legend->SetShadow(false);
 
-	// Créer le graphe
-	$graph = new PieGraph(1500, 800);
-	$graph->SetShadow();
-
-	// Definir un titre pour le graphe
-	$graph->title->Set(ucfirst($par1) . " en fonction de " . ucfirst($par2) . " dans la region " . $par3);
-	// Modeliser le graphe
-	$p1 = new PiePlot($dataPar1);
-	//$p1->SetLabelType(PIE_VALUE_ADJPERCENTAGE);
-	$p1->SetStartAngle(90);
-	$p1->SetLegends($dataPar2);
-
-	$p1->SetLabelPos(0.7);
-
-	//On précise la taille
-	$p1->SetSize(0.25);
-
-	$p1->SetGuideLines(true, false);
-	$p1->SetGuideLinesAdjust(1.1);
-
-	$graph->Add($p1);
+	for ($i = 0; $i < $nbConsolidationOriginal; ++$i) {
+		$graph->Add($p[$i]);
+	}
 	$graph->Stroke();
 }
 

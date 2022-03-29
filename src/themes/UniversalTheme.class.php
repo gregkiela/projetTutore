@@ -164,7 +164,6 @@ class UniversalTheme extends Theme
 
             case 'PiePlot':
             {
-                $plot->SetCenter(0.5, 0.45);
                 $plot->ShowBorder(false);
                 $plot->SetSliceColors($this->GetThemeColors());
                 break;
