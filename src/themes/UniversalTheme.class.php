@@ -34,19 +34,18 @@ class UniversalTheme extends Theme
     function SetupGraph($graph) {
 
         // graph
-        /*
         $img = $graph->img;
         $height = $img->height;
         $graph->SetMargin($img->left_margin, $img->right_margin, $img->top_margin, $height * 0.25);
-        */
+        
         $graph->SetFrame(false);
         $graph->SetMarginColor('white');
         $graph->SetBox(true, '#DADADA');
-//        $graph->SetBackgroundGradient($this->background_color, '#FFFFFF', GRAD_HOR, BGRAD_PLOT);
+        $graph->SetBackgroundGradient($this->background_color, '#FFFFFF', GRAD_HOR, BGRAD_PLOT);
 
         // legend
         $graph->legend->SetFrameWeight(0);
-        $graph->legend->Pos(0.5, 0.85, 'center', 'top');
+        $graph->legend->Pos(0.5, 0.80, 'center', 'top');
         $graph->legend->SetFillColor('white');
         $graph->legend->SetLayout(LEGEND_HOR);
         $graph->legend->SetColumns(3);
@@ -60,7 +59,7 @@ class UniversalTheme extends Theme
         $graph->xaxis->SetLabelMargin(10);
         $graph->xaxis->HideTicks();
         $graph->xaxis->SetTitleMargin(15);
-        //$graph->xaxis->SetLabelMargin(30);
+        $graph->xaxis->SetLabelMargin(30);
                 
         // yaxis
         $graph->yaxis->title->SetColor($this->font_color);  
@@ -95,7 +94,7 @@ class UniversalTheme extends Theme
         $graph->legend->SetFillColor('white');
 
         $graph->legend->SetFrameWeight(0);
-        $graph->legend->Pos(0.5, 0.80, 'center', 'top');
+        $graph->legend->Pos(0.5, 0.85, 'center', 'top');
         $graph->legend->SetLayout(LEGEND_HOR);
         $graph->legend->SetColumns(4);
 
@@ -104,6 +103,7 @@ class UniversalTheme extends Theme
 
         // title
         $graph->title->SetColor($this->font_color);
+        //$graph->title->SetPos(0.1,0.3);
         $graph->subtitle->SetColor($this->font_color);
         $graph->subsubtitle->SetColor($this->font_color);
 

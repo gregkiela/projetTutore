@@ -180,9 +180,9 @@ switch ($formalisme) {
 
 function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
+	//echo $requete;
 	//appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
 	$link = connexionBase();
-
 	$result = mysqli_query($link, $requete) or die("selection impossible 2");
 
 	// Definir les données
@@ -194,47 +194,58 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 
 	$result = mysqli_query($link, $requete) or die("selection impossible 2");
 
-	$trouveLaEnBasLa = false;
 	for ($i = 0; $i < $nbContrainte; $i++) {
 		if ($tabContraintesMod[$i] == "GROUP BY") {
 			while ($donnees = mysqli_fetch_assoc($result)) {
 				array_push($dataPar2, $donnees["$tabContraintes[$i]"]);
 			}
-			$trouveLaEnBasLa = true;
 		}
 	};
 
 	// Créer le graphe
-	$tailleX = $nbConsolidationOriginal * 500;
-	$tailleY = $nbConsolidationOriginal * 350;
+	$largeurGraphique = $nbConsolidationOriginal * 550;
+	$hauteurGraphique = $nbConsolidationOriginal * 325;
 
-	$graph = new Graph($tailleX, $tailleY, 'auto');
+	$graph = new Graph($largeurGraphique, $hauteurGraphique, 'auto');
 	$graph->SetScale("textlin");
 
-	$theme_class = new UniversalTheme;
-	$graph->SetTheme($theme_class);
+	$graph->graph_theme = null;
 
-	$graph->SetBox(false);
+	$graph->SetMargin(60, 40, 40, 60);
+	$graph->SetBox(true);
 
-	$graph->ygrid->SetFill(false);
+	//Axe des abcisses
 	$graph->xaxis->SetTickLabels($dataPar2);
-	$graph->yaxis->HideLine(false);
-	$graph->yaxis->HideTicks(false, false);
+	$graph->xaxis->title->Set(ucfirst($tabContraintes[0]));
 
-	$tabBplot = array();
+	//Axe des ordonnées
+	$graph->yaxis->HideTicks(true, false);
+	//graph->yaxis->title->Set();
 
+	$groupeDePlot = array();
+
+	$text = "";
 	// Create the bar plots
 	for ($i = 0; $i < count($tabConsolidationOriginal); $i++) {
+		$text .= agregationToText($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
+		if ($i != count($tabConsolidationOriginal) - 1) {
+			$text .= " et ";
+		}
 		$bplot = new BarPlot($tabArray[$i]);
 		$bplot->SetColor("white");
-		$bplot->SetFillColor("#cc1111");
-		array_push($tabBplot, $bplot);
+		$bplot->SetFillColor(GetColorList()[$i]);
+		$bplot->value->Show();
+		$bplot->value->SetColor(GetColorList()[$i]);
+		$bplot->value->SetFormat('%01.0f');
+		array_push($groupeDePlot, $bplot);
 	}
-	$tabFinal = new GroupBarPlot($tabBplot);
+	$groupeDePlot = new GroupBarPlot($groupeDePlot);
 
-	$graph->Add($tabFinal);
+	$graph->Add($groupeDePlot);
 
-	$graph->title->Set("Bar Plots");
+	$text .= " par " . $tabContraintes[0];
+
+	$graph->title->Set($text);
 
 	$fileName = "graphiques/imagefile.png";
 	$graph->Stroke($fileName);
@@ -245,14 +256,22 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 	//appel de la fonction de connexion à la base de donnée et on recupere les deux parametres voulues
 	$link = connexionBase();
 
-
-
 	// Create the plots
 	for ($i = 0; $i < $nbConsolidationOriginal; ++$i) {
 		$graph = new PieGraph(1200, 800);
 		$graph->SetShadow();
-		$theme_class = new UniversalTheme;
-		$graph->SetTheme($theme_class);
+		// $theme_class = new UniversalTheme;
+		// $graph->SetTheme($theme_class);
+		//$graph->graph_theme = null;
+
+		//Création du titre
+		//var_dump($tabConsolidationModOriginal);
+		$text = agregationToText($tabConsolidationModOriginal[$i]);
+		$titre = $text . $tabConsolidationOriginal[$i];
+		$graph->title->Set($titre);
+
+		//$graph->SetMargin(60, 40, 10, 40);
+
 		$dataPar2 = array(); //Nom des colonnes en axe X
 		$tabArray = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
 
@@ -267,7 +286,7 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 			}
 		}
 
-		var_dump($dataPar2);
+		//var_dump($dataPar2);
 
 		$result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
 
@@ -277,23 +296,24 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 
 		$p = new PiePlot($tabArray);
 
-		$p->title->Set($i);
-
 		$p->SetStartAngle(90);
 
-		$p->value->Show();
+		//$p->SetMargin(0,0,0,0);
 
-		$p->SetSize(0.20);
+		//$p->value->Show();
 
-		$p->SetCenter(0.5, 0.45);
+		//$p->SetSize(1);
+
+		//$p->SetCenter(0.5, 0.45);
 
 		// Use one legend for the whole graph
 		$p->SetLegends($dataPar2);
-		$graph->legend->SetShadow(false);
+		//$graph->legend->SetShadow(false);
 		$graph->Add($p);
 
 		$fileName = "graphiques/imagefile$i.png";
-		$graph->Stroke($fileName);
+		// $graph->Stroke($fileName);
+		$graph->Stroke();
 	}
 }
 
@@ -317,23 +337,20 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
 
 	$result = mysqli_query($link, $chaine) or die("selection impossible 2");
 
-	$trouveLaEnBasLa = false;
 	for ($i = 0; $i < $nbContrainte; $i++) {
 		if ($tabContraintesMod[$i] == "GROUP BY") {
 			while ($donnees = mysqli_fetch_assoc($result)) {
 				array_push($dataPar2, $donnees["$tabContraintes[$i]"]);
 			}
-			$trouveLaEnBasLa = true;
 		}
 	};
 
-
 	// Créer le graphe
-	$tailleX = $nbConsolidationOriginal * 1500;
-	$tailleY = $nbConsolidationOriginal * 700;
+	$largeurGraphique = $nbConsolidationOriginal * 1500;
+	$hauteurGraphique = $nbConsolidationOriginal * 700;
 
 
-	$graph = new Graph($tailleX, $tailleY);
+	$graph = new Graph($largeurGraphique, $hauteurGraphique);
 	$graph->SetScale("linlin");
 
 	$graph->img->SetMargin(40, 40, 40, 40);
@@ -342,7 +359,6 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
 	$graph->title->Set("A simple scatter plot");
 	$graph->title->SetFont(FF_FONT1, FS_BOLD);
 
-	$tabCouleur = array('green', 'red', 'blue', 'green');
 	// Create the bar plots
 	for ($i = 0; $i < count($tabConsolidationOriginal); $i++) {
 		$tabx = array();
@@ -351,7 +367,7 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
 		}
 		$tabFinal = new ScatterPlot($tabx, $dataPar2);
 		$tabFinal->link->Show();
-		$tabFinal->link->SetColor($tabCouleur[$i]);
+		$tabFinal->link->SetColor(GetColorList()[$i]);
 		// ...and add it to the graPH
 		$graph->Add($tabFinal);
 	}
@@ -361,7 +377,8 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
 
 	// Display the graph
 	$fileName = "graphiques/imagefile.png";
-	$graph->Stroke($fileName);
+	//$graph->Stroke($fileName);
+	$graph->Stroke();
 }
 
 /********************************************************/
@@ -398,4 +415,43 @@ function renvoieValeurSelect($requete, $tabConsolidationModOriginal, $tabConsoli
 	}
 
 	return ($tabArray);
+}
+
+function agregationToText($agregation)
+{
+	$text = "";
+	switch ($agregation) {
+		case 'SUM':
+			$text = "Le nombre de ";
+			break;
+		case 'AVG':
+			$text = "La moyenne de ";
+			break;
+		case 'COUNT':
+			$text = "Evocation de ";
+			break;
+	}
+	return $text;
+}
+
+function GetColorList()
+{
+	return array(
+		'#61a9f3', #blue
+		'#f381b9', #red
+		'#61E3A9', #green
+
+		#'#D56DE2',
+		'#85eD82',
+		'#F7b7b7',
+		'#CFDF49',
+		'#88d8f2',
+		'#07AF7B',
+		'#B9E3F9',
+		'#FFF3AD',
+		'#EF606A',
+		'#EC8833',
+		'#FFF100',
+		'#87C9A5',
+	);
 }
