@@ -1,5 +1,7 @@
 <?php
 
+include 'fonctions.php';
+
 /**************************************************************************/
 /****************LES USE NECESSAIRE AU FORMALISME GRAPHIQUE****************/
 /**************************************************************************/
@@ -21,7 +23,7 @@ $nbConsolidationOriginal = $_GET['nbconsolidation'];
 $nbContrainte = $_GET['nbContrainte']; //le nombre de WHERE/GROUP BY/ORDER BY a faire
 $nbContrainteOriginal = $_GET['nbContrainte'];
 $formalisme = $_GET['formalisme']; //le formalisme souhaité
-$nomTable = "Departements"; //le nom de la table de la base de donnée
+$nomTable = "total"; //le nom de la table de la base de donnée
 $variableJointure = "code";
 
 $tabConsolidation = array(); //contient toutes les recherches du select
@@ -161,14 +163,14 @@ switch ($formalisme) {
 /****************LES FONCTIONS DE GRAPHES****************/
 /********************************************************/
 
-function DiagrammeBarre($requete, $tabConsolidation, $tabConsolidationMod, $nbConsolidation, $tabContraintes, $tabContraintesMod, $tabWhere, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
+function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
 	//appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
-	$link = connexion_Base();
+	$link = connexionBase();
 
 
 	//requete recuperant les valeurs de la base de données
-	$nomTable = "Departements";
+	//$nomTable = "Departements";
 
 	$result = mysqli_query($link, $requete) or die("selection impossible 2");
 
@@ -233,14 +235,10 @@ function DiagrammeBarre($requete, $tabConsolidation, $tabConsolidationMod, $nbCo
 	$graph->Stroke();
 }
 
-function DiagrammeSecteur($requete, $tabConsolidation, $tabConsolidationMod, $nbConsolidation, $tabContraintes, $tabContraintesMod, $tabWhere, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
+function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
 	//appel de la fonction de connexion à la base de donnée et on recupere les deux parametres voulues
-	$link = connexion_Base();
-
-
-	//requete recuperant les valeurs de la base de données
-	$nomTable = "Departements";
+	$link = connexionBase();
 
 	$graph = new PieGraph(1200, 800);
 	$graph->SetShadow();
@@ -270,8 +268,6 @@ function DiagrammeSecteur($requete, $tabConsolidation, $tabConsolidationMod, $nb
 			array_push($tabArray, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
 		}
 
-		$d = "tabArray$i";
-		//sort($tabArray[$i]);;
 		$p[] = new PiePlot($tabArray);
 
 		$p[$i]->title->Set($i);
@@ -301,14 +297,11 @@ function DiagrammeSecteur($requete, $tabConsolidation, $tabConsolidationMod, $nb
 	$graph->Stroke();
 }
 
-function NuagePoints($chaine, $tabConsolidation, $tabConsolidationMod, $nbConsolidation, $tabContraintes, $tabContraintesMod, $tabWhere, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
+function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
 	//appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
-	$link = connexion_Base();
+	$link = connexionBase();
 
-
-	//requete recuperant les valeurs de la base de données
-	$nomTable = "Departements";
 
 	$result = mysqli_query($link, $chaine) or die("selection impossible 2");
 

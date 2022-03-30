@@ -109,8 +109,6 @@ foreach ($tousLesJSON as $donnee) {
     $i++;
 }
 
-var_dump($nomTables);
-
 $requeteJoin = "SELECT * FROM cadca";
 
 foreach($nomTables as $table)
@@ -120,8 +118,9 @@ foreach($nomTables as $table)
 
 verifTable($link,"total");
 
-echo $requeteJoin;
 
 $requete = "CREATE TABLE total AS $requeteJoin";
 
 mysqli_query($link, $requete) or die("impossible");
+
+header("Location: CreerRequete.php");

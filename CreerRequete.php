@@ -1,13 +1,11 @@
 <?php
 
-$bdd = "glavergne001_pro";
-$host = "lakartxela.iutbayonne.univ-pau.fr";
-$user = "glavergne001_pro";
-$pass = "glavergne001_pro";
-$nomTable = "Departements";
+include 'fonctions.php';
 
-//connexion à la base de données
-$link = mysqli_connect($host, $user, $pass, $bdd) or die("impossible de se connecter");
+$link = connexionBase();
+
+$nomTable = "total";
+
 
 /*
 **CREATION DES DEUX TABLEAUX
