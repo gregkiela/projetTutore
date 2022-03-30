@@ -131,13 +131,15 @@ $nbOrderBy = 0;
 for ($i = 0; $i < $nbContrainte; $i++) {
 	//si la contrainte est un order by
 	if ($tabContraintesMod[$i] == "ORDER BY") {
-		//on la concaténe a la requete avec sa variable attitrée
-		if ($nbOrderBy == 0) {
-			$chaine .= " ORDER BY $tabContraintes[$i]";
-		} else {
-			$chaine .= ",$tabContraintes[$i]";
+		if ($formalisme != "Diagramme en secteur") {
+			//on la concaténe a la requete avec sa variable attitrée
+			if ($nbOrderBy == 0) {
+				$chaine .= " ORDER BY $tabContraintes[$i]";
+			} else {
+				$chaine .= ",$tabContraintes[$i]";
+			}
+			$nbOrderBy++;
 		}
-		$nbOrderBy++;
 	}
 }
 
@@ -172,7 +174,7 @@ switch ($formalisme) {
 		break;
 }
 
-//header("Location: affichage.php");
+header("Location: affichage.php");
 
 /********************************************************/
 /****************LES FONCTIONS DE GRAPHES****************/
@@ -256,64 +258,56 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 	//appel de la fonction de connexion à la base de donnée et on recupere les deux parametres voulues
 	$link = connexionBase();
 
-	// Create the plots
+	//Pour chaque select de l'utilisateur
 	for ($i = 0; $i < $nbConsolidationOriginal; ++$i) {
+
+		//Création du graphique
 		$graph = new PieGraph(1200, 800);
-		$graph->SetShadow();
-		// $theme_class = new UniversalTheme;
-		// $graph->SetTheme($theme_class);
-		//$graph->graph_theme = null;
+
+		//on définit le theme à null
+		$graph->graph_theme = null;
 
 		//Création du titre
-		//var_dump($tabConsolidationModOriginal);
-		$text = agregationToText($tabConsolidationModOriginal[$i]);
+		$text = agregationToText($tabConsolidationModOriginal[$i], true);
 		$titre = $text . $tabConsolidationOriginal[$i];
+		$titre .= " par " . $tabContraintes[0];
 		$graph->title->Set($titre);
 
-		//$graph->SetMargin(60, 40, 10, 40);
+		$valeursLegende = array(); //Nom des colonnes en axe X
+		$valeursGraphiques = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
 
-		$dataPar2 = array(); //Nom des colonnes en axe X
-		$tabArray = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
-
-		$requeteCourante = '';
+		//Création de la requete
+		$requeteCourante = $requete;
 		for ($j = 0; $j < $nbContrainte; $j++) {
 			if ($tabContraintesMod[$j] == "GROUP BY") {
-				$requeteCourante = $requete . " ORDER BY $tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])";
+				//On  rajoute nous meme le order by pour afficher le graphique selon les règles des diagrammes en secteur
+				$requeteCourante .= " ORDER BY $tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])";
 				$result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
 				while ($donnees = mysqli_fetch_assoc($result)) {
-					array_push($dataPar2, $donnees["$tabContraintes[$j]"]);
+					array_push($valeursLegende, $donnees["$tabContraintes[$j]"]);
 				}
 			}
 		}
 
-		//var_dump($dataPar2);
-
 		$result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
 
 		while ($donnees = mysqli_fetch_assoc($result)) {
-			array_push($tabArray, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
+			array_push($valeursGraphiques, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
 		}
 
-		$p = new PiePlot($tabArray);
+		//Création du pie
+		$pie = new PiePlot($valeursGraphiques);
 
-		$p->SetStartAngle(90);
+		//On définit l'angle de départ pour qu'on parte bien du haut du graphique
+		$pie->SetStartAngle(90);
 
-		//$p->SetMargin(0,0,0,0);
-
-		//$p->value->Show();
-
-		//$p->SetSize(1);
-
-		//$p->SetCenter(0.5, 0.45);
-
-		// Use one legend for the whole graph
-		$p->SetLegends($dataPar2);
+		//Définition de la légende du graphique
+		$pie->SetLegends($valeursLegende);
 		//$graph->legend->SetShadow(false);
-		$graph->Add($p);
+		$graph->Add($pie);
 
 		$fileName = "graphiques/imagefile$i.png";
-		// $graph->Stroke($fileName);
-		$graph->Stroke();
+		$graph->Stroke($fileName);
 	}
 }
 
@@ -417,18 +411,30 @@ function renvoieValeurSelect($requete, $tabConsolidationModOriginal, $tabConsoli
 	return ($tabArray);
 }
 
-function agregationToText($agregation)
+function agregationToText($agregation, $type = false)
 {
 	$text = "";
 	switch ($agregation) {
 		case 'SUM':
-			$text = "Le nombre de ";
+			if (!$type) {
+				$text = "Le nombre de ";
+			} else {
+				$text = "Répartition de ";
+			}
 			break;
 		case 'AVG':
-			$text = "La moyenne de ";
+			if (!$type) {
+				$text = "La moyenne de ";
+			} else {
+				$text = "Répartition de la moyenne de ";
+			}
 			break;
 		case 'COUNT':
-			$text = "Evocation de ";
+			if (!$type) {
+				$text = "Evocation de ";
+			} else {
+				$text = "Répartition de l'évocation de ";
+			}
 			break;
 	}
 	return $text;

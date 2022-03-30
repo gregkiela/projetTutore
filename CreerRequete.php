@@ -26,7 +26,7 @@ foreach ($reponse as $donnees) {
 
 
 $tabValeur=array("=",">","<","<=",">=");
-$tabModalitesConsolidationLabel=array("La somme de ","La moyenne de","Le nombre de");
+$tabModalitesConsolidationLabel=array("La nombre de ","La moyenne de","Apparition de");
 $tabModalitesConsolidation=array("SUM","AVG","COUNT");
 $tabModalitesContraintesLabel=array("Grouper par","Ordonner par","Par Valeur");
 $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
