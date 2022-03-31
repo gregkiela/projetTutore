@@ -89,8 +89,8 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     };
 
     // Créer le graphe
-    $largeurGraphique = $nbConsolidationOriginal * 550;
-    $hauteurGraphique = $nbConsolidationOriginal * 325;
+    $largeurGraphique = $nbConsolidationOriginal * 1800;
+    $hauteurGraphique = $nbConsolidationOriginal * 1200;
 
     $graph = new Graph($largeurGraphique, $hauteurGraphique, 'auto');
     $graph->SetScale("textlin");
@@ -126,7 +126,8 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
         $bplot = new BarPlot($valeursRequete[$i]);
         $bplot->SetColor("white");
         $bplot->SetFillColor(tableauCouleurs()[$i]);
-        $bplot->value->Show();
+        $bplot->value->Show(false,false);
+        $bplot->value->HideZero();
         $bplot->value->SetColor(tableauCouleurs()[$i]);
         $bplot->value->SetFormat('%01.0f');
         array_push($groupeDePlot, $bplot);
@@ -174,8 +175,6 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
                 $requeteCourante .= " ORDER BY $tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])";
                 $result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
                 while ($donnees = mysqli_fetch_assoc($result)) {
-                    var_dump($donnees);
-                    echo $tabContraintes[$j];
                     array_push($valeursLegende, $donnees["$tabContraintes[$j]"]);
                 }
             }
@@ -192,9 +191,39 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
         //On définit l'angle de départ pour qu'on parte bien du haut du graphique
         $pie->SetStartAngle(90);
 
+        $pie->SetSliceColors(array(
+            '#CFE7FB',
+            '#F9D76F',
+            '#B9D566',
+            '#FFBB90',
+            '#66BBBB',
+            '#E69090',
+            '#BB90BB',
+            '#9AB67C',
+            '#D1CC66',
+
+
+
+            '#AFD8F8',
+            '#F6BD0F',
+            '#8BBA00',
+            '#FF8E46',
+            '#008E8E',
+
+            '#D64646',
+            '#8E468E',
+            '#588526',
+            '#B3AA00',
+            '#008ED6',
+
+            '#9D080D',
+            '#A186BE',
+
+        ));
+
         //Définition de la légende du graphique
-        var_dump($valeursLegende);
         $pie->SetLegends($valeursLegende);
+        $graph->legend->SetFrameWeight(1);
 
         $graph->Add($pie);
 

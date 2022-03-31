@@ -22,7 +22,7 @@ class SoftyTheme extends Theme
             '#9AB67C',
             '#D1CC66',
 
-/*
+
 
             '#AFD8F8',
             '#F6BD0F',
@@ -38,7 +38,7 @@ class SoftyTheme extends Theme
 
             '#9D080D',
             '#A186BE',
-            */
+            
         );
     }
 
