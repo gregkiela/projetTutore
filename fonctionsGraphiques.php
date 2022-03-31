@@ -97,11 +97,15 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 
     $graph->graph_theme = null;
 
-    $graph->SetMargin(60, 40, 40, 60);
+    $graph->SetMargin(60, 40, 40, 200);
     $graph->SetBox(false);
 
     //Axe des abcisses
     $graph->xaxis->SetTickLabels($valeursLegende);
+    if(count($valeursLegende)>10)
+    {
+        $graph->xaxis->SetLabelAngle(90);
+    }
     $graph->xaxis->title->Set(ucfirst($tabContraintes[0]));
 
     //Axe des ordonnées
@@ -126,7 +130,7 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
         $bplot = new BarPlot($valeursRequete[$i]);
         $bplot->SetColor("white");
         $bplot->SetFillColor(tableauCouleurs()[$i]);
-        $bplot->value->Show(false,false);
+        $bplot->value->Show();
         $bplot->value->HideZero();
         $bplot->value->SetColor(tableauCouleurs()[$i]);
         $bplot->value->SetFormat('%01.0f');
