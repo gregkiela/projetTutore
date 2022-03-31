@@ -4,13 +4,13 @@ include 'fonctions.php';
 include 'fonctionsGraphiques.php';
 
 set_error_handler(function ($niveau, $message, $fichier, $ligne) {
-    // echo 'Erreur : ' .$message. '<br>';
-    // echo 'Niveau de l\'erreur : ' .$niveau. '<br>';
-    // echo 'Erreur dans le fichier : ' .$fichier. '<br>';
-    // echo 'Emplacement de l\'erreur : ' .$ligne. '<br>';
-    if ($niveau == 2) {
-        header("Location: accueil.php?erreur=mauvaiseURL");
-    }
+	// echo 'Erreur : ' .$message. '<br>';
+	// echo 'Niveau de l\'erreur : ' .$niveau. '<br>';
+	// echo 'Erreur dans le fichier : ' .$fichier. '<br>';
+	// echo 'Emplacement de l\'erreur : ' .$ligne. '<br>';
+	if ($niveau == 2) {
+		header("Location: accueil.php?erreur=mauvaiseURL");
+	}
 });
 
 /**************************************************************************/
@@ -84,7 +84,7 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 //on démarre la séléction
 $chaine = "SELECT ";
 
-//on concaténe toutes les recherches du select avec leurs modes de recherche et on intégre dans le tableau des GROUP BY les attributs du select qui n'y sont pas
+//on concaténe toutes les recherches du select avec leurs modes de recherche et on intègre dans le tableau des GROUP BY les attributs du select qui n'y sont pas
 for ($i = 0; $i < $nbConsolidation; $i++) {
 	if ($tabConsolidationMod[$i] == " ") {
 		$chaine .= "$tabConsolidation[$i]";
@@ -95,8 +95,6 @@ for ($i = 0; $i < $nbConsolidation; $i++) {
 		$chaine .= ",";
 	}
 }
-
-
 
 //on ajoute le from à la requete
 $chaine .= " FROM $nomTable ";
@@ -157,7 +155,6 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 $nomDossier = "graphiques/";
 $dossier = opendir($nomDossier);
 
-
 while ($fichier = readdir($dossier)) {
 	if ($fichier != "." && $fichier != "..") {
 
@@ -169,16 +166,29 @@ while ($fichier = readdir($dossier)) {
 
 switch ($formalisme) {
 	case "Diagramme en secteur":
-		DiagrammeSecteur($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
+		try {
+			DiagrammeSecteur($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
+			header("Location: affichage.php");
+		} catch (Exception $e) {
+			header("Location: CreerRequete.php?erreur=true");
+		}
 		break;
 
 	case "Diagramme en barre":
-		DiagrammeBarre($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
+		try {
+			DiagrammeBarre($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
+			header("Location: affichage.php");
+		} catch (Exception $e) {
+			header("Location: CreerRequete.php?erreur=true");
+		}
 		break;
 
 	case "Nuage de points":
-		NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
+		try {
+			NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal);
+			header("Location: affichage.php");
+		} catch (Exception $e) {
+			header("Location: CreerRequete.php?erreur=true");
+		}
 		break;
 }
-
-header("Location: affichage.php");

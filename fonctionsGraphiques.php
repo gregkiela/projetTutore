@@ -67,7 +67,6 @@ function tableauCouleurs()
 
 function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
-    //echo $requete;
     //appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
     $link = connexionBase();
     $result = mysqli_query($link, $requete) or die("selection impossible 2");
@@ -175,6 +174,8 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
                 $requeteCourante .= " ORDER BY $tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])";
                 $result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
                 while ($donnees = mysqli_fetch_assoc($result)) {
+                    var_dump($donnees);
+                    echo $tabContraintes[$j];
                     array_push($valeursLegende, $donnees["$tabContraintes[$j]"]);
                 }
             }
@@ -186,18 +187,19 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
             array_push($valeursRequete, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
         }
 
-        //Création du pie
         $pie = new PiePlot($valeursRequete);
 
         //On définit l'angle de départ pour qu'on parte bien du haut du graphique
         $pie->SetStartAngle(90);
 
         //Définition de la légende du graphique
+        var_dump($valeursLegende);
         $pie->SetLegends($valeursLegende);
-        //$graph->legend->SetShadow(false);
+
         $graph->Add($pie);
 
         $fileName = "graphiques/imagefile$i.png";
+
         $graph->Stroke($fileName);
     }
 }
@@ -278,12 +280,7 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
             }
         }
 
-        try {
-            $points = new ScatterPlot($valeursGraphique, $valeursLegende);
-        } catch (Exception $e) {
-            header("Location: CreerRequete.php");
-        }
-
+        $points = new ScatterPlot($valeursGraphique, $valeursLegende);
         //Personnalisation des points
         $points->mark->SetType(6);
         $points->mark->SetFillColor(tableauCouleurs()[$i]);
@@ -309,10 +306,5 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
 
     // Display the graph
     $fileName = "graphiques/imagefile.png";
-    //$graph->Stroke($fileName);
-    try {
-        $graph->Stroke();
-    } catch (Exception $e) {
-        header("Location: CreerRequete.php");
-    }
+    $graph->Stroke($fileName);
 }
