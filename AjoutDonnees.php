@@ -5,6 +5,7 @@ $recapColonnes = $_SESSION['nomColonnes'];
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>Ajout des autre sources</title>
@@ -57,14 +58,14 @@ $recapColonnes = $_SESSION['nomColonnes'];
 <body>
     <div class="contenu">
         <div class="header">
-                <h1>Bienvenue sur AutoGraph</h1>
-                <div class="barreFixe"></div>
-            </div>
+            <h1>Bienvenue sur AutoGraph</h1>
+            <div class="barreFixe"></div>
+        </div>
 
-            <div class="barre"></div>
+        <div class="barre"></div>
 
-            <div class="nomPage">
-            <nav> 
+        <div class="nomPage">
+            <nav>
                 <div class="aligner">
                     <div class="cercleExt3">
                         <h1>✔</h1>
@@ -127,7 +128,8 @@ $recapColonnes = $_SESSION['nomColonnes'];
                     }
                 }
                 ?>
+            </div>
         </div>
-    </div>
 </body>
+
 </html>

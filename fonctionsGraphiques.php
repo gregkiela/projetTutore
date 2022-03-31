@@ -19,13 +19,6 @@ function agregationToTitre($agregation, $type = false)
 {
     $titre = "";
     switch ($agregation) {
-        case 'SUM':
-            if (!$type) {
-                $titre = "Le nombre de ";
-            } else {
-                $titre = "Répartition de ";
-            }
-            break;
         case 'AVG':
             if (!$type) {
                 $titre = "La moyenne de ";
@@ -33,11 +26,11 @@ function agregationToTitre($agregation, $type = false)
                 $titre = "Répartition de la moyenne de ";
             }
             break;
-        case 'COUNT':
+        default:
             if (!$type) {
-                $titre = "Evocation de ";
+                $titre = "Le nombre de ";
             } else {
-                $titre = "Répartition de l'évocation de ";
+                $titre = "Répartition de ";
             }
             break;
     }
@@ -65,6 +58,25 @@ function tableauCouleurs()
     );
 }
 
+function typeConsolidationBd($consolidation, $lienBD)
+{
+    $requete = "SELECT COLUMN_NAME,COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'total'";
+    $nomColonnes = mysqli_query($lienBD, $requete) or die("Impossible de récupérer le nom des colonnes");
+
+    $type = '';
+
+    foreach ($nomColonnes as $colonne) {
+        if ($colonne['COLUMN_NAME'] == $consolidation) {
+            $type = $colonne['COLUMN_TYPE'];
+        }
+    }
+    if ($type == "text") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
     //appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
@@ -89,8 +101,8 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     };
 
     // Créer le graphe
-    $largeurGraphique = $nbConsolidationOriginal * 1800;
-    $hauteurGraphique = $nbConsolidationOriginal * 1200;
+    $largeurGraphique = $nbConsolidationOriginal * 1600;
+    $hauteurGraphique = $nbConsolidationOriginal * 1000;
 
     $graph = new Graph($largeurGraphique, $hauteurGraphique, 'auto');
     $graph->SetScale("textlin");
@@ -102,11 +114,11 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 
     //Axe des abcisses
     $graph->xaxis->SetTickLabels($valeursLegende);
-    if(count($valeursLegende)>10)
-    {
+    if (count($valeursLegende) > 10) {
         $graph->xaxis->SetLabelAngle(90);
     }
     $graph->xaxis->title->Set(ucfirst($tabContraintes[0]));
+    $graph->xaxis->SetLabelMargin(5);
 
     //Axe des ordonnées
     $graph->yaxis->HideTicks(true, false);

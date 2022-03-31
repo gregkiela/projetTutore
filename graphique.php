@@ -46,12 +46,25 @@ $tabContraintesMod = array(); //contient les modalités de ces contraintes
 $tabWhere = array(); //contient la comparaison des comparaison "where"
 $tabWhereValeur = array();
 
+//on recupère la connexion à la bd
+$link = connexionBase();
 //on recupere toutes les consolidations
 for ($i = 0; $i < $nbConsolidation; $i++) {
 	array_push($tabConsolidation, $_GET['Consolidation' . $i]);
-	array_push($tabConsolidationMod, $_GET['ConsolidationMod' . $i]);
 	array_push($tabConsolidationOriginal, $_GET['Consolidation' . $i]);
-	array_push($tabConsolidationModOriginal, $_GET['ConsolidationMod' . $i]);
+	if ($_GET['ConsolidationMod' . $i] == "SUM") {
+		$text = typeConsolidationBd($_GET['Consolidation' . $i], $link);
+		if ($text) {
+			array_push($tabConsolidationModOriginal, "COUNT");
+			array_push($tabConsolidationMod, "COUNT");
+		} else {
+			array_push($tabConsolidationModOriginal, "SUM");
+			array_push($tabConsolidationMod, "SUM");
+		}
+	} else {
+		array_push($tabConsolidationModOriginal, $_GET['ConsolidationMod' . $i]);
+		array_push($tabConsolidationMod, $_GET['ConsolidationMod' . $i]);
+	}
 }
 
 $possedeUnGroupBy = false;
@@ -69,18 +82,14 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 		$possedeUnGroupBy = true;
 		$groupByEstDansWhere = false;
 		for ($j = 0; $j < $nbConsolidation; $j++) {
-			if($tabConsolidationMod[$j]==" ")
-			{
-				$consolidation=$tabConsolidation[$j];
+			if ($tabConsolidationMod[$j] == " ") {
+				$consolidation = $tabConsolidation[$j];
+			} else {
+				$consolidation = $tabConsolidationMod[$j] . "(" . $tabConsolidation[$j] . ")";
 			}
-			else
-			{
-				$consolidation=$tabConsolidationMod[$j]."(".$tabConsolidation[$j].")";
-			}
-			
-			if ($consolidation== $tabContraintes[$i]) 
-			{
-					$groupByEstDansWhere = true;
+
+			if ($consolidation == $tabContraintes[$i]) {
+				$groupByEstDansWhere = true;
 			}
 		}
 		if (!$groupByEstDansWhere) {

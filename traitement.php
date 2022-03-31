@@ -2,6 +2,17 @@
 
 include 'fonctions.php';
 
+//Si une erreur apparait 
+set_error_handler(function ($niveau, $message, $fichier, $ligne) {
+    // echo 'Erreur : ' .$message. '<br>';
+    // echo 'Niveau de l\'erreur : ' .$niveau. '<br>';
+    // echo 'Erreur dans le fichier : ' .$fichier. '<br>';
+    // echo 'Emplacement de l\'erreur : ' .$ligne. '<br>';
+    if ($niveau == 2) {
+        header("Location: accueil.php?erreur=mauvaiseURL");
+    }
+});
+
 $link = connexionBase();
 
 $nbFichier = $_POST['nbFichier'];
@@ -121,6 +132,6 @@ verifTable($link,"total");
 
 $requete = "CREATE TABLE total AS $requeteJoin";
 
-mysqli_query($link, $requete) or die("impossible");
+mysqli_query($link, $requete) or die(header("Location: AjoutDonnees.php?erreur=mauvaiseURL"));
 
-header("Location: CreerRequete.php");
+//header("Location: CreerRequete.php");

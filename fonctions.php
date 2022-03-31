@@ -83,7 +83,7 @@ function csvToJson($fname)
 function connexionBase()
 {
     //connexion à la base de données
-    $link = mysqli_connect("lakartxela.iutbayonne.univ-pau.fr", "gerrecart_pro", "gerrecart_pro", "gerrecart_pro") or die("Impossible de se connecter");
+    $link = mysqli_connect("lakartxela.iutbayonne.univ-pau.fr", "gerrecart_pro", "gerrecart_pro", "gerrecart_pro") or die(header("Location: accueil.php?erreur=mauvaiseURL"));
 
     $requete = 'SET NAMES UTF8';
     mysqli_query($link, $requete);
@@ -131,7 +131,7 @@ function verifTable($lienBD, $nomTable)
     $tableExists = mysqli_num_rows($result) > 0;
     if ($tableExists) {
         $requete = "DROP TABLE $nomTable";
-        mysqli_query($lienBD, $requete);
+        mysqli_query($lienBD, $requete) or die(header("Location: accueil.php?erreur=mauvaiseURL"));
     }
 }
 
@@ -150,7 +150,7 @@ function creationTable($lienBD, $nomTable, $cles, $valeurs, $indice)
         $requete = $requete . $suiteRequete;
     }
     $requete = $requete . " ENGINE = InnoDB DEFAULT CHARSET utf8 DEFAULT COLLATE utf8_unicode_ci;";
-    mysqli_query($lienBD, $requete) or die("Impossible de créer la table");
+    mysqli_query($lienBD, $requete) or die(header("Location: accueil.php?erreur=mauvaiseURL"));
 }
 
 function clesPresentFichier($json)
@@ -242,7 +242,7 @@ function insertionValeurs($lienBD, $nomTable, $valeurs)
             }
             $requete = $requete . $suiteRequete;
         }
-        mysqli_query($lienBD, $requete) or die("Impossible d'insérer les données");
+        mysqli_query($lienBD, $requete) or die(header("Location: accueil.php?erreur=mauvaiseURL"));
     }
 }
 
@@ -250,7 +250,7 @@ function recupNomColonnes($lienBD, $nomTable)
 {
     //Maintenant on va répérer le nom des colonnes via une requète
     $requete = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$nomTable'";
-    $nomColonnes = mysqli_query($lienBD, $requete) or die("Impossible de récupérer le nom des colonnes");
+    $nomColonnes = mysqli_query($lienBD, $requete) or die(header("Location: accueil.php?erreur=mauvaiseURL"));
 
     $stockNomColonnes = array();
 

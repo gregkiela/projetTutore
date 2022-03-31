@@ -112,7 +112,7 @@
                             /*?><script>alert("Attention, le lien renseigné pose problème ! Veuillez réessayer.");</script><?php*/
                         }
                         if ($_GET['erreur'] == "mauvaiseURL") {
-                            echo "<p><font color='pink'>Attention, le lien renseigné pose un problème</font></p>";
+                            echo "<p><font color='pink'>Attention, vos données posent un problème</font></p>";
                             /*?><script>alert("Attention, le lien renseigné pose problème ! Veuillez réessayer.");</script><?php*/
                         }
                     }
