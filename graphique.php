@@ -2,6 +2,16 @@
 
 include 'fonctions.php';
 
+// set_error_handler(function ($niveau, $message, $fichier, $ligne) {
+//     echo 'Erreur : ' .$message. '<br>';
+//     echo 'Niveau de l\'erreur : ' .$niveau. '<br>';
+//     echo 'Erreur dans le fichier : ' .$fichier. '<br>';
+//     echo 'Emplacement de l\'erreur : ' .$ligne. '<br>';
+//     // if ($niveau == 2) {
+//     //     header("Location: accueil.php?erreur=mauvaiseURL");
+//     // }
+// });
+
 /**************************************************************************/
 /****************LES USE NECESSAIRE AU FORMALISME GRAPHIQUE****************/
 /**************************************************************************/
@@ -209,12 +219,12 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 	$hauteurGraphique = $nbConsolidationOriginal * 325;
 
 	$graph = new Graph($largeurGraphique, $hauteurGraphique, 'auto');
-	$graph->SetScale("titrelin");
+	$graph->SetScale("textlin");
 
 	$graph->graph_theme = null;
 
 	$graph->SetMargin(60, 40, 40, 60);
-	$graph->SetBox(true);
+	$graph->SetBox(false);
 
 	//Axe des abcisses
 	$graph->xaxis->SetTickLabels($valeursLegende);
@@ -228,7 +238,14 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 	$titre = "";
 	// Create the bar plots
 	for ($i = 0; $i < count($tabConsolidationOriginal); $i++) {
-		$titre .= agregationTotitre($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
+		//Création du titre
+		if ($i == 0) {
+			$titre .= agregationToTitre($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
+		}
+		//On ne met que le début de la phrase avec une majuscule, sinon minuscule
+		else {
+			$titre .= strtolower(agregationToTitre($tabConsolidationModOriginal[$i])) . $tabConsolidationOriginal[$i];
+		}
 		if ($i != count($tabConsolidationOriginal) - 1) {
 			$titre .= " et ";
 		}
@@ -267,7 +284,7 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 		$graph->graph_theme = null;
 
 		//Création du titre
-		$titre = agregationTotitre($tabConsolidationModOriginal[$i], true);
+		$titre = agregationToTitre($tabConsolidationModOriginal[$i], true);
 		$titre = $titre . $tabConsolidationOriginal[$i];
 		$titre .= " par " . $tabContraintes[0];
 		$graph->title->Set($titre);
@@ -325,58 +342,116 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
 	//permet de remplir le tableau
 	$valeursRequete = renvoieValeurSelect($result, $tabConsolidationModOriginal, $tabConsolidationOriginal, $nbConsolidationOriginal);
 
+	var_dump($valeursRequete);
+
 	//On rerécupère les valeurs de la requete 
 	$result = mysqli_query($link, $chaine) or die("selection impossible 2");
-
-
 	for ($i = 0; $i < $nbContrainte; $i++) {
 		if ($tabContraintesMod[$i] == "GROUP BY") {
 			while ($donnees = mysqli_fetch_assoc($result)) {
-				array_push($valeursLegende, $donnees["$tabContraintes[$i]"]);
+				var_dump($donnees);
+				echo $tabContraintes[$i];
+
+				try{
+					array_push($valeursLegende, $donnees["$tabContraintes[$i]"]);
+				}
+				catch(Exception $e){
+					header("Location: CreerRequete.php");
+				}				
 			}
 		}
 	};
 
 	// Créer le graphe
-	$largeurGraphique = $nbConsolidationOriginal * 550;
-	$hauteurGraphique = $nbConsolidationOriginal * 325;
+	$largeurGraphique = 900;
+	$hauteurGraphique = 600;
 
 
 	$graph = new Graph($largeurGraphique, $hauteurGraphique);
-	$graph->SetScale("linlin");
+	$graph->SetScale("intlin");
 
 	$graph->graph_theme = null;
 
-	$graph->img->SetMargin(50, 40, 40, 55);
-	$graph->SetBox(true);
+	$graph->img->SetMargin(50, 40, 40, 90);
+	$graph->SetBox(false);
+
+	//Axe des abcisses
+	$graph->xaxis->SetTitle(ucfirst($tabContraintes[0]));
+	$graph->xaxis->SetTitleMargin(5);
+
+	//Axe des ordonnées
+	$graph->yaxis->HideTicks(true, false);
 
 	//Créer les tracés du graphique et le titre
-	$titre='';
+	$titre = '';
 	for ($i = 0; $i < count($tabConsolidationOriginal); $i++) {
 		//Création du titre
-		$titre .= agregationTotitre($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
+		if ($i == 0) {
+			$titre .= agregationToTitre($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
+		}
+		//On ne met que le début de la phrase avec une majuscule, sinon minuscule
+		else {
+			$titre .= strtolower(agregationToTitre($tabConsolidationModOriginal[$i])) . $tabConsolidationOriginal[$i];
+		}
 		if ($i != count($tabConsolidationOriginal) - 1) {
 			$titre .= " et ";
 		}
+
+		//Remplissage du tableau qui contiendra les valeurs du graphiques
 		$valeursGraphique = array();
 		for ($j = 0; $j < count($valeursRequete[$i]); $j++) {
+			//Grace à la requete
 			array_push($valeursGraphique, $valeursRequete[$i][$j]);
 		}
-		$tabFinal = new ScatterPlot($valeursGraphique, $valeursLegende);
-		$tabFinal->link->SetColor(GetColorList()[$i]);
-		// ...and add it to the graPH
-		$graph->Add($tabFinal);
+
+		//Modification des valeurs du graphiques
+		//On modifie les valeurs null
+		foreach ($valeursGraphique as &$valeur) {
+			if ($valeur == null) {
+				$valeur = '';
+			}
+		}
+
+		try{
+			$points = new ScatterPlot($valeursGraphique, $valeursLegende);
+		}
+		catch(Exception $e){
+			header("Location: CreerRequete.php");
+		}
+
+		//Personnalisation des points
+		$points->mark->SetType(6);
+		$points->mark->SetFillColor(GetColorList()[$i]);
+		$points->mark->SetWidth(3);
+
+		//Ajout de la légende pour les points
+		$points->SetLegend($tabConsolidationOriginal[$i]);
+
+		//On ajoute les points au graphique
+		$graph->Add($points);
 	}
+
+	//Personnalisation de la légende
+	$graph->legend->SetFrameWeight(1);
+	$graph->legend->SetHColMargin(10);
+	$graph->legend->SetPos(0.5, 0.94, 'center', 'top');
 
 	$titre .= " par " . $tabContraintes[0];
 
 	$graph->title->Set($titre);
-	$graph->title->SetFont(FF_FONT1, FS_BOLD);
+	$graph->title->SetFont(FF_FONT2, FS_BOLD);
+
 
 	// Display the graph
 	$fileName = "graphiques/imagefile.png";
 	//$graph->Stroke($fileName);
-	$graph->Stroke();
+	try{
+		$graph->Stroke();
+	}
+	catch(Exception $e){
+		header("Location: CreerRequete.php");
+
+	}
 }
 
 /********************************************************/
@@ -415,7 +490,7 @@ function renvoieValeurSelect($requete, $tabConsolidationModOriginal, $tabConsoli
 	return ($valeursRequete);
 }
 
-function agregationTotitre($agregation, $type = false)
+function agregationToTitre($agregation, $type = false)
 {
 	$titre = "";
 	switch ($agregation) {

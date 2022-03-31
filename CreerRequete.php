@@ -26,7 +26,7 @@ foreach ($reponse as $donnees) {
 
 
 $tabValeur=array("=",">","<","<=",">=");
-$tabModalitesConsolidationLabel=array("La nombre de ","La moyenne de","Apparition de");
+$tabModalitesConsolidationLabel=array("Le nombre de ","La moyenne de","Apparition de");
 $tabModalitesConsolidation=array("SUM","AVG","COUNT");
 $tabModalitesContraintesLabel=array("Grouper par","Ordonner par","Par Valeur");
 $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
@@ -63,7 +63,7 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 		var tab_formalisme = ["Diagramme en barre","Diagramme en secteur","Nuage de points"];
 		var nbConsolidation=1;//nombre de consolidation dans le formulaire
 		var nbContrainte=1;//nombre de contrainte dans le formulaire
-		
+		var nbTour=0;
 		/*
 		 **FONCTIONS
 		 */
@@ -114,12 +114,17 @@ $tabModalitesContraintes= array("GROUP BY","ORDER BY","WHERE");
 			//on verifie les contraintes pour agir sur les contraintes
 			ajouterInputValeur();
 			
+			if(nbTour==0)
+			{
+				//choix fait dans la liste de formalisme
+				selection = document.getElementById("choixConsolidation"); //zone de selection de l'utilisateur
 
-			//choix fait dans la liste de formalisme
-			selection = document.getElementById("choixConsolidation"); //zone de selection de l'utilisateur
+				//on creer la liste des choix de diagramme possibles
+				creerChoixFormalisme(selection, tab_formalisme);
 
-			//on creer la liste des choix de diagramme possibles
-			creerChoixFormalisme(selection, tab_formalisme);
+				nbTour++;
+			}
+			
 		}
 
 		//FONCTION CREERCHOIXFORMALISME : permet de remplir la liste des formalismes possible avec les elements d'un tableau passé en paramétre
