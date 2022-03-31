@@ -3,7 +3,7 @@
 include 'fonctions.php';
 include 'fonctionsGraphiques.php';
 
-set_error_handler(function ($niveau, $message, $fichier, $ligne) {
+/*set_error_handler(function ($niveau, $message, $fichier, $ligne) {
 	// echo 'Erreur : ' .$message. '<br>';
 	// echo 'Niveau de l\'erreur : ' .$niveau. '<br>';
 	// echo 'Erreur dans le fichier : ' .$fichier. '<br>';
@@ -11,7 +11,7 @@ set_error_handler(function ($niveau, $message, $fichier, $ligne) {
 	if ($niveau == 2) {
 		header("Location: accueil.php?erreur=mauvaiseURL");
 	}
-});
+});*/
 
 /**************************************************************************/
 /****************LES USE NECESSAIRE AU FORMALISME GRAPHIQUE****************/
@@ -69,8 +69,18 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 		$possedeUnGroupBy = true;
 		$groupByEstDansWhere = false;
 		for ($j = 0; $j < $nbConsolidation; $j++) {
-			if ($tabConsolidation[$j] == $tabContraintes[$i]) {
-				$groupByEstDansWhere = true;
+			if($tabConsolidationMod[$j]==" ")
+			{
+				$consolidation=$tabConsolidation[$j];
+			}
+			else
+			{
+				$consolidation=$tabConsolidationMod[$j]."(".$tabConsolidation[$j].")";
+			}
+			
+			if ($consolidation== $tabContraintes[$i]) 
+			{
+					$groupByEstDansWhere = true;
 			}
 		}
 		if (!$groupByEstDansWhere) {
