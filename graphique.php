@@ -188,18 +188,18 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 	$result = mysqli_query($link, $requete) or die("selection impossible 2");
 
 	// Definir les données
-	$dataPar2 = array(); //Nom des colonnes en axe X
-	$tabArray = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
+	$valeursLegende = array(); //Nom des colonnes en axe X
+	$valeursRequete = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
 
 	//permet de remplir le tableau 
-	$tabArray = renvoieValeurSelect($result, $tabConsolidationModOriginal, $tabConsolidationOriginal, $nbConsolidationOriginal);
+	$valeursRequete = renvoieValeurSelect($result, $tabConsolidationModOriginal, $tabConsolidationOriginal, $nbConsolidationOriginal);
 
 	$result = mysqli_query($link, $requete) or die("selection impossible 2");
 
 	for ($i = 0; $i < $nbContrainte; $i++) {
 		if ($tabContraintesMod[$i] == "GROUP BY") {
 			while ($donnees = mysqli_fetch_assoc($result)) {
-				array_push($dataPar2, $donnees["$tabContraintes[$i]"]);
+				array_push($valeursLegende, $donnees["$tabContraintes[$i]"]);
 			}
 		}
 	};
@@ -209,7 +209,7 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 	$hauteurGraphique = $nbConsolidationOriginal * 325;
 
 	$graph = new Graph($largeurGraphique, $hauteurGraphique, 'auto');
-	$graph->SetScale("textlin");
+	$graph->SetScale("titrelin");
 
 	$graph->graph_theme = null;
 
@@ -217,23 +217,22 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 	$graph->SetBox(true);
 
 	//Axe des abcisses
-	$graph->xaxis->SetTickLabels($dataPar2);
+	$graph->xaxis->SetTickLabels($valeursLegende);
 	$graph->xaxis->title->Set(ucfirst($tabContraintes[0]));
 
 	//Axe des ordonnées
 	$graph->yaxis->HideTicks(true, false);
-	//graph->yaxis->title->Set();
 
 	$groupeDePlot = array();
 
-	$text = "";
+	$titre = "";
 	// Create the bar plots
 	for ($i = 0; $i < count($tabConsolidationOriginal); $i++) {
-		$text .= agregationToText($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
+		$titre .= agregationTotitre($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
 		if ($i != count($tabConsolidationOriginal) - 1) {
-			$text .= " et ";
+			$titre .= " et ";
 		}
-		$bplot = new BarPlot($tabArray[$i]);
+		$bplot = new BarPlot($valeursRequete[$i]);
 		$bplot->SetColor("white");
 		$bplot->SetFillColor(GetColorList()[$i]);
 		$bplot->value->Show();
@@ -245,9 +244,9 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 
 	$graph->Add($groupeDePlot);
 
-	$text .= " par " . $tabContraintes[0];
+	$titre .= " par " . $tabContraintes[0];
 
-	$graph->title->Set($text);
+	$graph->title->Set($titre);
 
 	$fileName = "graphiques/imagefile.png";
 	$graph->Stroke($fileName);
@@ -268,13 +267,13 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 		$graph->graph_theme = null;
 
 		//Création du titre
-		$text = agregationToText($tabConsolidationModOriginal[$i], true);
-		$titre = $text . $tabConsolidationOriginal[$i];
+		$titre = agregationTotitre($tabConsolidationModOriginal[$i], true);
+		$titre = $titre . $tabConsolidationOriginal[$i];
 		$titre .= " par " . $tabContraintes[0];
 		$graph->title->Set($titre);
 
 		$valeursLegende = array(); //Nom des colonnes en axe X
-		$valeursGraphiques = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
+		$valeursRequete = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
 
 		//Création de la requete
 		$requeteCourante = $requete;
@@ -292,11 +291,11 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 		$result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
 
 		while ($donnees = mysqli_fetch_assoc($result)) {
-			array_push($valeursGraphiques, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
+			array_push($valeursRequete, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
 		}
 
 		//Création du pie
-		$pie = new PiePlot($valeursGraphiques);
+		$pie = new PiePlot($valeursRequete);
 
 		//On définit l'angle de départ pour qu'on parte bien du haut du graphique
 		$pie->SetStartAngle(90);
@@ -313,61 +312,66 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 
 function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
-	//appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
+	//on récupère le parametre de connexion à la bd  
 	$link = connexionBase();
 
-
+	//récupération résultats de la requête
 	$result = mysqli_query($link, $chaine) or die("selection impossible 2");
 
 	// Definir les données
-	$dataPar2 = array(); //Nom des colonnes en axe X
-	$tabArray = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
+	$valeursLegende = array(); //Nom des colonnes en axe X
+	$valeursRequete = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
 
+	//permet de remplir le tableau
+	$valeursRequete = renvoieValeurSelect($result, $tabConsolidationModOriginal, $tabConsolidationOriginal, $nbConsolidationOriginal);
 
-	//permet de remplir le tableau 
-
-	$tabArray = renvoieValeurSelect($result, $tabConsolidationModOriginal, $tabConsolidationOriginal, $nbConsolidationOriginal);
-
-
+	//On rerécupère les valeurs de la requete 
 	$result = mysqli_query($link, $chaine) or die("selection impossible 2");
+
 
 	for ($i = 0; $i < $nbContrainte; $i++) {
 		if ($tabContraintesMod[$i] == "GROUP BY") {
 			while ($donnees = mysqli_fetch_assoc($result)) {
-				array_push($dataPar2, $donnees["$tabContraintes[$i]"]);
+				array_push($valeursLegende, $donnees["$tabContraintes[$i]"]);
 			}
 		}
 	};
 
 	// Créer le graphe
-	$largeurGraphique = $nbConsolidationOriginal * 1500;
-	$hauteurGraphique = $nbConsolidationOriginal * 700;
+	$largeurGraphique = $nbConsolidationOriginal * 550;
+	$hauteurGraphique = $nbConsolidationOriginal * 325;
 
 
 	$graph = new Graph($largeurGraphique, $hauteurGraphique);
 	$graph->SetScale("linlin");
 
-	$graph->img->SetMargin(40, 40, 40, 40);
-	$graph->SetShadow();
+	$graph->graph_theme = null;
 
-	$graph->title->Set("A simple scatter plot");
-	$graph->title->SetFont(FF_FONT1, FS_BOLD);
+	$graph->img->SetMargin(50, 40, 40, 55);
+	$graph->SetBox(true);
 
-	// Create the bar plots
+	//Créer les tracés du graphique et le titre
+	$titre='';
 	for ($i = 0; $i < count($tabConsolidationOriginal); $i++) {
-		$tabx = array();
-		for ($j = 0; $j < count($tabArray[$i]); $j++) {
-			array_push($tabx, $tabArray[$i][$j]);
+		//Création du titre
+		$titre .= agregationTotitre($tabConsolidationModOriginal[$i]) . $tabConsolidationOriginal[$i];
+		if ($i != count($tabConsolidationOriginal) - 1) {
+			$titre .= " et ";
 		}
-		$tabFinal = new ScatterPlot($tabx, $dataPar2);
-		$tabFinal->link->Show();
+		$valeursGraphique = array();
+		for ($j = 0; $j < count($valeursRequete[$i]); $j++) {
+			array_push($valeursGraphique, $valeursRequete[$i][$j]);
+		}
+		$tabFinal = new ScatterPlot($valeursGraphique, $valeursLegende);
 		$tabFinal->link->SetColor(GetColorList()[$i]);
 		// ...and add it to the graPH
 		$graph->Add($tabFinal);
 	}
 
+	$titre .= " par " . $tabContraintes[0];
 
-	$graph->title->Set("Scatter plot");
+	$graph->title->Set($titre);
+	$graph->title->SetFont(FF_FONT1, FS_BOLD);
 
 	// Display the graph
 	$fileName = "graphiques/imagefile.png";
@@ -399,45 +403,45 @@ function connexion_Base()
 function renvoieValeurSelect($requete, $tabConsolidationModOriginal, $tabConsolidationOriginal, $nbConsolidationOriginal)
 {
 	$nbElement = 0;
-	$tabArray = array();
+	$valeursRequete = array();
 
 	while ($donnees = mysqli_fetch_assoc($requete)) {
 		for ($i = 0; $i < $nbConsolidationOriginal; $i++) {
-			$tabArray[$i][$nbElement] = $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"];
+			$valeursRequete[$i][$nbElement] = $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"];
 		}
 		$nbElement++;
 	}
 
-	return ($tabArray);
+	return ($valeursRequete);
 }
 
-function agregationToText($agregation, $type = false)
+function agregationTotitre($agregation, $type = false)
 {
-	$text = "";
+	$titre = "";
 	switch ($agregation) {
 		case 'SUM':
 			if (!$type) {
-				$text = "Le nombre de ";
+				$titre = "Le nombre de ";
 			} else {
-				$text = "Répartition de ";
+				$titre = "Répartition de ";
 			}
 			break;
 		case 'AVG':
 			if (!$type) {
-				$text = "La moyenne de ";
+				$titre = "La moyenne de ";
 			} else {
-				$text = "Répartition de la moyenne de ";
+				$titre = "Répartition de la moyenne de ";
 			}
 			break;
 		case 'COUNT':
 			if (!$type) {
-				$text = "Evocation de ";
+				$titre = "Evocation de ";
 			} else {
-				$text = "Répartition de l'évocation de ";
+				$titre = "Répartition de l'évocation de ";
 			}
 			break;
 	}
-	return $text;
+	return $titre;
 }
 
 function GetColorList()
