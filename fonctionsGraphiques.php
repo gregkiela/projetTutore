@@ -155,6 +155,7 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     $titre .= " par " . $tabContraintes[0];
 
     $graph->title->Set($titre);
+    $graph->title->SetFont(FF_FONT2, FS_BOLD);
 
     $fileName = "graphiques/imagefile.png";
     $graph->Stroke($fileName);
@@ -179,6 +180,7 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
         $titre = $titre . $tabConsolidationOriginal[$i];
         $titre .= " par " . $tabContraintes[0];
         $graph->title->Set($titre);
+        $graph->title->SetFont(FF_FONT2, FS_BOLD);
 
         $valeursLegende = array(); //Nom des colonnes en axe X
         $valeursRequete = array(); //Contient toutes les valeurs de toutes les consolidations de la requete

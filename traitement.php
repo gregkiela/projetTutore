@@ -134,4 +134,4 @@ $requete = "CREATE TABLE total AS $requeteJoin";
 
 mysqli_query($link, $requete) or die(header("Location: AjoutDonnees.php?erreur=mauvaiseURL"));
 
-//header("Location: CreerRequete.php");
+header("Location: CreerRequete.php");
