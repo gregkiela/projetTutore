@@ -1,0 +1,32 @@
+[
+    {
+        "dep" : 40,
+        "plage": 0,
+        "parking": 25,
+        "cinema": 3,
+        "patinoire": true,
+        "boulangerie": 256,
+        "parc": 23,
+        "karting": true
+    },
+    {
+        "dep" : 44,
+        "plage": 8,
+        "parking": 12,
+        "cinema": 2,
+        "patinoire": true,
+        "boulangerie": 155,
+        "parc": 48,
+        "karting": true
+    },
+    {
+        "dep" : 64,
+        "plage": 2,
+        "parking": 38,
+        "cinema": 4,
+        "patinoire": false,
+        "boulangerie": 378,
+        "parc": 26,
+        "karting": true
+    }
+]

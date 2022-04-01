@@ -1,0 +1,26 @@
+[
+    {
+        "dep" : 40,
+        "nbEnseignants": 1250,
+        "nbEleves": 12548,
+        "ecoles": 125,
+        "lycees": 16,
+        "IUT": true
+    },
+    {
+        "dep" : 44,
+        "nbEnseignants": 6855,
+        "nbEleves": 25784,
+        "ecoles": 103,
+        "lycees": 11,
+        "IUT": true
+    },
+    {
+        "dep" : 64,
+        "nbEnseignants": 4893,
+        "nbEleves": 19635,
+        "ecoles": 86,
+        "lycees": 8,
+        "IUT": true
+    }
+]

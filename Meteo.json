@@ -1,0 +1,20 @@
+[
+    {
+        "dep" : 40,
+        "meteo": "Sunny",
+        "nbStations": 12,
+        "nbJoursPluie": 118
+    },
+    {
+        "dep" : 44,
+        "meteo": "Clear",
+        "nbStations": 10,
+        "nbJoursPluie": 96
+    },
+    {
+        "dep" : 64,
+        "meteo": "Cloudly",
+        "nbStations": 7,
+        "nbJoursPluie": 215
+    }
+]
