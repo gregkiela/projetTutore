@@ -103,7 +103,7 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 //on démarre la séléction
 $chaine = "SELECT ";
 
-//on concaténe toutes les recherches du select avec leurs modes de recherche et on intègre dans le tableau des GROUP BY les attributs du select qui n'y sont pas
+//on concatène toutes les recherches du select avec leurs modes de recherche et on intègre dans le tableau des GROUP BY les attributs du select qui n'y sont pas
 for ($i = 0; $i < $nbConsolidation; $i++) {
 	if ($tabConsolidationMod[$i] == " ") {
 		$chaine .= "$tabConsolidation[$i]";
@@ -115,17 +115,17 @@ for ($i = 0; $i < $nbConsolidation; $i++) {
 	}
 }
 
-//on ajoute le from à la requete
+//on ajoute le from à la requête
 $chaine .= " FROM $nomTable ";
 
-//on ajoute tout les where
+//on ajoute tout les WHERE
 $nbWhere = 0;
 
 //on parcours le tableau de contraintes
 for ($i = 0; $i < $nbContrainte; $i++) {
-	//si la contrainte est un where
+	//si la contrainte est un WHERE
 	if ($tabContraintesMod[$i] == "WHERE") {
-		//on la concaténe avec son mode de comparaison
+		//on la concatène avec son mode de comparaison
 		if ($nbWhere == 0) {
 			$chaine .= "WHERE $tabContraintes[$i] $tabWhere[$i] \"$tabWhereValeur[$i]\"";
 		} else {
@@ -135,14 +135,14 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 	}
 }
 
-//on ajoute tout les group by
+//on ajoute tout les GOUP BY
 $nbGroupBy = 0;
 
 //on parcours toutes les contraintes
 for ($i = 0; $i < $nbContrainte; $i++) {
 	//si la contrainte est un group by
 	if ($tabContraintesMod[$i] == "GROUP BY") {
-		//on la concaténe avec sa variable attitrée
+		//on la concatène avec sa variable attitrée
 		if ($nbGroupBy == 0) {
 			$chaine .= " GROUP BY $tabContraintes[$i]";
 		} else {
@@ -152,7 +152,7 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 	}
 }
 
-//on ajoute tout les orders by
+//on ajoute tout les ORDER BY
 $nbOrderBy = 0;
 
 //on parcours le tableau
@@ -160,7 +160,7 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 	//si la contrainte est un order by
 	if ($tabContraintesMod[$i] == "ORDER BY") {
 		if ($formalisme != "Diagramme en secteur") {
-			//on la concaténe a la requete avec sa variable attitrée
+			//on la concatène a la requete avec sa variable attitrée
 			if ($nbOrderBy == 0) {
 				$chaine .= " ORDER BY $tabContraintes[$i]";
 			} else {
@@ -174,7 +174,7 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 $nomDossier = "graphiques/";
 $dossier = opendir($nomDossier);
 
-//On parcours le dossier contenant les graphiques et on les supprimes
+//On parcours le dossier contenant les graphiques et on les supprime
 while ($fichier = readdir($dossier)) {
 	if ($fichier != "." && $fichier != "..") {
 

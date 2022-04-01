@@ -170,7 +170,6 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     //Définition du titre
     $titre .= " par " . $tabContraintes[0];
     $graph->title->Set($titre);
-    $graph->title->SetFont(FF_FONT2, FS_BOLD);
 
     $fileName = "graphiques/imagefile.png";
     $graph->Stroke($fileName);
@@ -195,7 +194,6 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
         $titre = $titre . $tabConsolidationOriginal[$i];
         $titre .= " par " . $tabContraintes[0];
         $graph->title->Set($titre);
-        $graph->title->SetFont(FF_FONT2, FS_BOLD);
 
         $valeursLegende = array(); //Nom des colonnes en axe X
         $valeursRequete = array(); //Contient toutes les valeurs de toutes les consolidations de la requete
@@ -223,6 +221,8 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 
         //On définit l'angle de départ pour qu'on parte bien du haut du graphique
         $pie->SetStartAngle(90);
+
+        $pie->SetSize(0.32);
 
         //Déinition des couleurs des secteurs par un tableau
         $pie->SetSliceColors(array(
@@ -367,8 +367,6 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
     $titre .= " par " . $tabContraintes[0];
 
     $graph->title->Set($titre);
-    $graph->title->SetFont(FF_FONT2, FS_BOLD);
-
 
     //Enregistrement du graphique dans un fichier
     $fileName = "graphiques/imagefile.png";
