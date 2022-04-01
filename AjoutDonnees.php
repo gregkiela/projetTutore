@@ -68,7 +68,7 @@ $recapColonnes = $_SESSION['nomColonnes'];
             <nav>
                 <div class="aligner">
                     <div class="cercleExt3">
-                        <h1>✔</h1>
+                        <a href="Accueil.php">✔</a>
                     </div>
                     <h1 class="petitTexte">Première source de données</h1>
                 </div>

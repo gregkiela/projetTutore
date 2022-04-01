@@ -205,6 +205,7 @@ $tabModalitesContraintes = array("GROUP BY", "ORDER BY", "WHERE");
 			}
 
 			monUrl += "&formalisme=" + formalisme + "&nbconsolidation=" + cptConso + "&nbContrainte=" + cptContr;
+			alert(monUrl);
 			window.open(monUrl);
 			//document.getElementById("img1").src = monUrl;
 			//test_valeurs_tableau(tabConsolidations,tabContraintes);
@@ -431,13 +432,13 @@ $tabModalitesContraintes = array("GROUP BY", "ORDER BY", "WHERE");
 			<nav>
 				<div class="aligner">
 					<div class="cercleExt3">
-						<h1>✔</h1>
+						<a href="Accueil.php">✔</a>
 					</div>
 					<h1 class="petitTexte">Première source de données</h1>
 				</div>
 				<div class="aligner">
 					<div class="cercleExt3">
-						<h1>✔</h1>
+						<a href="AjoutDonnees.php">✔</a>
 					</div>
 					<h1 class="petitTexte">Ajout des autres sources</h1>
 				</div>

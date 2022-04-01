@@ -101,6 +101,7 @@ select{
   .cercleExt2{
     width: 30px;
     padding: 15px;
+    padding-top:20px;
     border-radius: 80px;
     border: 2px solid #383228;
     background-color: #fefee2;
@@ -117,6 +118,7 @@ select{
 .cercleExt{
   width: 30px;
   padding: 15px;
+  padding-top:20px;
   border-radius: 80px;
   border: 2px solid #383228;
   background-color: #d0f8ff;
@@ -165,4 +167,17 @@ select{
     display: inline-block;
     margin-left: 100px;
     margin-right: 100px;
+}
+
+.graph{
+  border:1px solid rgb(44, 31, 22);
+  width: 1200px;
+  height: 800px;
+}
+
+.aligner a{
+  text-decoration: none;
+  color: black;
+  font-size: 25px;
+
 }
