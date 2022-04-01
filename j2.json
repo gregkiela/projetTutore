@@ -1,22 +1,23 @@
 [
     {
-        "dep" : 1,
-        "nombre_hab": 25000
+        "dep" : 40,
+        "nombre_hab": 413690,
+        "densite" : 45,
+        "superficie" : 9243,
+        "nb_communes" : 327
     },
     {
-        "dep" : 2,
-        "nombre_hab": 12000
+        "dep" : 64,
+        "nombre_hab": 682621,
+        "densite" : 89,
+        "superficie" : 7645,
+        "nb_communes" : 546
     },
     {
-        "dep" : 3,
-        "nombre_hab": 18000
-    },
-    {
-        "dep" : 4,
-        "nombre_hab": 1250000
-    },
-    {
-        "dep" : 5,
-        "nombre_hab": 350000
+        "dep" : 44,
+        "nombre_hab": 1429272,
+        "densite" : 208,
+        "superficie" : 6880,
+        "nb_communes" : 207
     }
 ]

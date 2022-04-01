@@ -1,22 +1,20 @@
 [
     {
-        "dep" : 1,
-        "ville": "Bayonne"
+        "dep" : 64,
+        "ville": "Bayonne",
+        "region": "Nouvelle-Aquitaine",
+        "pays": "France"
     },
     {
-        "dep" : 2,
-        "ville": "Anglet"
+        "dep" : 44,
+        "ville": "Saint-Nazaire",
+        "region": "Pays de la Loire",
+        "pays": "France"
     },
     {
-        "dep" : 3,
-        "ville": "Biarritz"
-    },
-    {
-        "dep" : 4,
-        "ville": "Paris"
-    },
-    {
-        "dep" : 5,
-        "ville": "Marseille"
+        "dep" : 40,
+        "ville": "Dax",
+        "region": "Nouvelle-Aquitaine",
+        "pays": "France"
     }
 ]

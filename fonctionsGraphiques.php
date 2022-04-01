@@ -42,21 +42,18 @@ function agregationToTitre($agregation, $type = false)
 function tableauCouleurs()
 {
     return array(
-        '#61a9f3',
-        '#f381b9',
-        '#61E3A9',
-        '#D56DE2',
-        '#85eD82',
-        '#F7b7b7',
-        '#CFDF49',
-        '#88d8f2',
-        '#07AF7B',
-        '#B9E3F9',
-        '#FFF3AD',
-        '#EF606A',
-        '#EC8833',
-        '#FFF100',
-        '#87C9A5',
+        '#183152',
+            '#C4D7ED',
+            '#375D81',
+            '#ABC8E2',
+            '#E1E6FA',
+            '#9BBAB2',
+            '#3B4259',
+            '#0063BC',
+            '#1D5A73',
+            '#ABABFF',
+            '#27ADC5',
+            '#EDFFCC',
     );
 }
 
@@ -106,8 +103,8 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     };
 
     // Créer le graphe
-    $largeurGraphique = $nbConsolidationOriginal * 1600;
-    $hauteurGraphique = $nbConsolidationOriginal * 1000;
+    $largeurGraphique =1000;
+    $hauteurGraphique = 650;
 
     $graph = new Graph($largeurGraphique, $hauteurGraphique, 'auto');
     $graph->SetScale("textlin");
