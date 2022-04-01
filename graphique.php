@@ -174,6 +174,7 @@ for ($i = 0; $i < $nbContrainte; $i++) {
 $nomDossier = "graphiques/";
 $dossier = opendir($nomDossier);
 
+//On parcours le dossier contenant les graphiques et on les supprimes
 while ($fichier = readdir($dossier)) {
 	if ($fichier != "." && $fichier != "..") {
 

@@ -204,9 +204,12 @@ function valeursObjetsJson($json, $presenceCles, $nombreMaxCles)
         //Tableau valeurs finales
         $valeursFinalesObjet = array();
 
+        //Pour chaque objet du json on regarde si toutes les clés sont présentes
         for ($j = 0, $y = 0; $j < $nombreMaxCles; $j++, $y++) {
+            //Si elle existe on garde la valeur de base
             if ($presenceCles[$i][$j] == true) {
                 array_push($valeursFinalesObjet, $valeursObjet[$y]);
+            //Sinon on associe la valeur null à la clé
             } else {
                 array_push($valeursFinalesObjet, NULL);
                 $y--;
@@ -220,22 +223,28 @@ function valeursObjetsJson($json, $presenceCles, $nombreMaxCles)
 
 function insertionValeurs($lienBD, $nomTable, $valeurs)
 {
+    //Pour chaque valeurs de l'objet
     foreach ($valeurs as $valObj) {
         //Déclaration début requête
         $requete =  "INSERT INTO $nomTable VALUES(";
 
         $i = 0;
+        //pour chaque valeur de l'objet on crée la requete d'insertion
         foreach ($valObj as $valeur) {
             if (++$i === count($valObj)) {
                 $finSuiteRequete = ");";
             } else {
                 $finSuiteRequete = ",";
             }
+            //Si la valeur est de type FLOAT on concatène 
             if (typeValeur(gettype($valeur)) == "FLOAT") {
                 $suiteRequete = " " . str_replace('"', '\'', $valeur) . " " . $finSuiteRequete;
+            //Sinon
             } else {
+                //Si la valeur est nulle ou vide on insère null
                 if (is_null($valeur) || $valeur == '') {
                     $suiteRequete = 'NULL' . $finSuiteRequete;
+                //Sinon on insère normalement
                 } else {
                     $suiteRequete = '"' . str_replace('"', '\'', $valeur) . '"' . $finSuiteRequete;
                 }
@@ -254,6 +263,7 @@ function recupNomColonnes($lienBD, $nomTable)
 
     $stockNomColonnes = array();
 
+    //Pour chaque colonne on enregistre son nom
     foreach ($nomColonnes as $colonne) {
         array_push($stockNomColonnes, $colonne['COLUMN_NAME']);
     }

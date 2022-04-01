@@ -125,18 +125,20 @@ foreach ($tousLesJSON as $donnee) {
     $i++;
 }
 
+//Début de la requete permettant de faire le join
 $requeteJoin = "SELECT * FROM source";
 
+//Pour chaque table on join
 foreach($nomTables as $table)
 {
     $requeteJoin.=" INNER JOIN $table USING($colonneChoisie)";
 }
 
-
+//On vérifie la table
 verifTable($link,$nomTableTotal);
 
+//On crée la table à partir de la requete
 $requete = "CREATE TABLE $nomTableTotal AS $requeteJoin";
-
 mysqli_query($link, $requete) or die(header("Location: accueil.php?erreur=mauvaiseURL"));
 
 header("Location: CreerRequete.php");

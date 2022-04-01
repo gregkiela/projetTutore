@@ -5,6 +5,7 @@ function renvoieValeurSelect($requete, $tabConsolidationModOriginal, $tabConsoli
     $nbElement = 0;
     $valeursRequete = array();
 
+    //Pour chaque donnée renvoyé
     while ($donnees = mysqli_fetch_assoc($requete)) {
         for ($i = 0; $i < $nbConsolidationOriginal; $i++) {
             $valeursRequete[$i][$nbElement] = $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"];
@@ -17,6 +18,7 @@ function renvoieValeurSelect($requete, $tabConsolidationModOriginal, $tabConsoli
 
 function agregationToTitre($agregation, $type = false)
 {
+    //On définit le titre par rapport à comment sont demandé les données
     $titre = "";
     switch ($agregation) {
         case 'AVG':
@@ -58,6 +60,7 @@ function tableauCouleurs()
     );
 }
 
+//Permet de savoir si on travaille avec du texte ou non
 function typeConsolidationBd($consolidation, $lienBD)
 {
     $nomTableTotal = "total";
@@ -78,11 +81,12 @@ function typeConsolidationBd($consolidation, $lienBD)
     }
 }
 
+//Fonction permettant de créer un diagramme en barre
 function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContrainte, $tabConsolidationOriginal, $tabConsolidationModOriginal, $nbConsolidationOriginal)
 {
     //appel de la fonction de connexion à la base de donnée et on recupere les parametres voulus
     $link = connexionBase();
-    $result = mysqli_query($link, $requete) or die("selection impossible 2");
+    $result = mysqli_query($link, $requete) or die(header("Location: CreerRequete.php?erreur=true"));
 
     // Definir les données
     $valeursLegende = array(); //Nom des colonnes en axe X
@@ -91,7 +95,7 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     //permet de remplir le tableau 
     $valeursRequete = renvoieValeurSelect($result, $tabConsolidationModOriginal, $tabConsolidationOriginal, $nbConsolidationOriginal);
 
-    $result = mysqli_query($link, $requete) or die("selection impossible 2");
+    $result = mysqli_query($link, $requete) or die(header("Location: CreerRequete.php?erreur=true"));
 
     for ($i = 0; $i < $nbContrainte; $i++) {
         if ($tabContraintesMod[$i] == "GROUP BY") {
@@ -108,9 +112,13 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     $graph = new Graph($largeurGraphique, $hauteurGraphique, 'auto');
     $graph->SetScale("textlin");
 
+    //On définit le thème à null pour éviter les problèmes
     $graph->graph_theme = null;
 
+    //On défint les marges du graphique
     $graph->SetMargin(60, 40, 40, 200);
+
+    //On enlève la bordure autour du graphique
     $graph->SetBox(false);
 
     //Axe des abcisses
@@ -118,7 +126,9 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
     if (count($valeursLegende) > 10) {
         $graph->xaxis->SetLabelAngle(90);
     }
+    //On met le titre de l'axe avec une majuscule au début
     $graph->xaxis->title->Set(ucfirst($tabContraintes[0]));
+    //On définit les marges des labels
     $graph->xaxis->SetLabelMargin(5);
 
     //Axe des ordonnées
@@ -142,10 +152,14 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
         }
         $bplot = new BarPlot($valeursRequete[$i]);
         $bplot->SetColor("white");
-        $bplot->SetFillColor(tableauCouleurs()[$i]);
+        //On affiche les valeurs au dessus des barres
         $bplot->value->Show();
-        $bplot->value->HideZero();
+        //On définit les couleurs des barres et des valeurs gace a un tableu de couleurs
+        $bplot->SetFillColor(tableauCouleurs()[$i]);
         $bplot->value->SetColor(tableauCouleurs()[$i]);
+        //On affiche pas si c'est égale à zéro
+        $bplot->value->HideZero();
+        //On définit le format
         $bplot->value->SetFormat('%01.0f');
         array_push($groupeDePlot, $bplot);
     }
@@ -153,8 +167,8 @@ function DiagrammeBarre($requete, $tabContraintes, $tabContraintesMod, $nbContra
 
     $graph->Add($groupeDePlot);
 
+    //Définition du titre
     $titre .= " par " . $tabContraintes[0];
-
     $graph->title->Set($titre);
     $graph->title->SetFont(FF_FONT2, FS_BOLD);
 
@@ -190,16 +204,16 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
         $requeteCourante = $requete;
         for ($j = 0; $j < $nbContrainte; $j++) {
             if ($tabContraintesMod[$j] == "GROUP BY") {
-                //On  rajoute nous meme le order by pour afficher le graphique selon les règles des diagrammes en secteur
+                //On  rajoute nous meme le ORDER BY pour afficher le graphique selon les règles des diagrammes en secteur
                 $requeteCourante .= " ORDER BY $tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])";
-                $result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
+                $result = mysqli_query($link, $requeteCourante) or die(header("Location: CreerRequete.php?erreur=true"));
                 while ($donnees = mysqli_fetch_assoc($result)) {
                     array_push($valeursLegende, $donnees["$tabContraintes[$j]"]);
                 }
             }
         }
 
-        $result = mysqli_query($link, $requeteCourante) or die("selection impossible 2");
+        $result = mysqli_query($link, $requeteCourante) or die(header("Location: CreerRequete.php?erreur=true"));
 
         while ($donnees = mysqli_fetch_assoc($result)) {
             array_push($valeursRequete, $donnees["$tabConsolidationModOriginal[$i]($tabConsolidationOriginal[$i])"]);
@@ -210,6 +224,7 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
         //On définit l'angle de départ pour qu'on parte bien du haut du graphique
         $pie->SetStartAngle(90);
 
+        //Déinition des couleurs des secteurs par un tableau
         $pie->SetSliceColors(array(
             '#CFE7FB',
             '#F9D76F',
@@ -246,8 +261,8 @@ function DiagrammeSecteur($requete, $tabContraintes, $tabContraintesMod, $nbCont
 
         $graph->Add($pie);
 
+        //Enreistrement de chaque secteur dans des fichiers
         $fileName = "graphiques/imagefile$i.png";
-
         $graph->Stroke($fileName);
     }
 }
@@ -258,7 +273,7 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
     $link = connexionBase();
 
     //récupération résultats de la requête
-    $result = mysqli_query($link, $chaine) or die("selection impossible 2");
+    $result = mysqli_query($link, $chaine) or die(header("Location: CreerRequete.php?erreur=true"));
 
     // Definir les données
     $valeursLegende = array(); //Nom des colonnes en axe X
@@ -269,7 +284,7 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
 
 
     //On rerécupère les valeurs de la requete 
-    $result = mysqli_query($link, $chaine) or die("selection impossible 2");
+    $result = mysqli_query($link, $chaine) or die(header("Location: CreerRequete.php?erreur=true"));
     for ($i = 0; $i < $nbContrainte; $i++) {
         if ($tabContraintesMod[$i] == "GROUP BY") {
             while ($donnees = mysqli_fetch_assoc($result)) {
@@ -286,9 +301,12 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
     $graph = new Graph($largeurGraphique, $hauteurGraphique);
     $graph->SetScale("intlin");
 
+    //On définit le thème à null pour éviter les problèmes
     $graph->graph_theme = null;
 
+    //Définition des marges
     $graph->img->SetMargin(50, 40, 40, 90);
+    //On enlève la bordure
     $graph->SetBox(false);
 
     //Axe des abcisses
@@ -352,7 +370,7 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
     $graph->title->SetFont(FF_FONT2, FS_BOLD);
 
 
-    // Display the graph
+    //Enregistrement du graphique dans un fichier
     $fileName = "graphiques/imagefile.png";
     $graph->Stroke($fileName);
 }
