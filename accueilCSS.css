@@ -2,10 +2,11 @@
     margin: auto;
 }
 
-.contenu{
-    background-color: #c7a27e;
-    height: 1300px;
+body{
+  background-color: #c7a27e;
+  height: 100%;
 }
+
 
 button{
     cursor: pointer;

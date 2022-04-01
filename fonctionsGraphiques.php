@@ -306,7 +306,7 @@ function NuagePoints($chaine, $tabContraintes, $tabContraintesMod, $nbContrainte
     $graph->graph_theme = null;
 
     //Définition des marges
-    $graph->img->SetMargin(50, 40, 40, 90);
+    $graph->img->SetMargin(80, 40, 40, 90);
     //On enlève la bordure
     $graph->SetBox(false);
 
