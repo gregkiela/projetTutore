@@ -4,7 +4,7 @@ include 'fonctions.php';
 
 $link = connexionBase();
 
-$nomTable = "total";
+$nomTableTotal = "total";
 
 
 /*
@@ -15,7 +15,7 @@ $tabColonnes = array(); //tableau contenant le nom des colonnes
 $tabColonnesTypes = array(); //tableau contenant le type de ces colonnes
 
 //requete SQL permettant de recuperer le nom des colonnes et leurs types
-$reponse = $link->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$nomTable'") or die("pas de select");
+$reponse = $link->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$nomTableTotal'") or die("pas de select");
 
 
 //on parcours la reponse

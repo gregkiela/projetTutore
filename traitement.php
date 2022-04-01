@@ -2,7 +2,8 @@
 
 include 'fonctions.php';
 
-//Si une erreur apparait 
+//On met en place un système d'erreur, si n'importe quelle erreur intervient durant le processus
+//on redirige vers la page d'accueil
 set_error_handler(function ($niveau, $message, $fichier, $ligne) {
     // echo 'Erreur : ' .$message. '<br>';
     // echo 'Niveau de l\'erreur : ' .$niveau. '<br>';
@@ -13,17 +14,21 @@ set_error_handler(function ($niveau, $message, $fichier, $ligne) {
     }
 });
 
+//Connexion à la base de données
 $link = connexionBase();
 
 $nbFichier = $_POST['nbFichier'];
 $nbURL = $_POST['nbURL'];
 
+//On récupère le parametre par lequel l'utilisateur souhaite joindre ses données
 $colonneChoisie = $_POST['liste'];
 
+//On 
 $nbFichier = intval($nbFichier);
 $nbURL = intval($nbURL);
 
 $nomTable = "tmp";
+$nomTableTotal = "total";
 
 
 $tousLesJSON = array();
@@ -120,18 +125,18 @@ foreach ($tousLesJSON as $donnee) {
     $i++;
 }
 
-$requeteJoin = "SELECT * FROM cadca";
+$requeteJoin = "SELECT * FROM source";
 
 foreach($nomTables as $table)
 {
     $requeteJoin.=" INNER JOIN $table USING($colonneChoisie)";
 }
 
-verifTable($link,"total");
+verifTable($link,$nomTableTotal);
 
 
-$requete = "CREATE TABLE total AS $requeteJoin";
+$requete = "CREATE TABLE $nomTableTotal AS $requeteJoin";
 
-mysqli_query($link, $requete) or die(header("Location: AjoutDonnees.php?erreur=mauvaiseURL"));
+mysqli_query($link, $requete) or die(header("Location: accueil.php?erreur=mauvaiseURL"));
 
 header("Location: CreerRequete.php");

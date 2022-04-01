@@ -4,10 +4,13 @@ include 'fonctions.php';
 
 session_start();
 
+//On se connecte à la base
 $link = connexionBase();
 
-$nomTable = "cadca";
+$nomTable = "source";
 
+//On met en place un système d'erreur, si n'importe quelle erreur intervient durant le processus
+//on redirige vers la page d'accueil
 set_error_handler(function ($niveau, $message, $fichier, $ligne) {
     // echo 'Erreur : ' .$message. '<br>';
     // echo 'Niveau de l\'erreur : ' .$niveau. '<br>';
@@ -18,12 +21,15 @@ set_error_handler(function ($niveau, $message, $fichier, $ligne) {
     }
 });
 
+//Si on reçoit des fichiers on vérifie leur type
 if (!empty($_FILES)) {
     $type = $_FILES['nom']['type'];
     if ($type != "application/vnd.ms-excel" && $type != "application/json" && $type != "application/xml") {
+        //Si pas respecté on redirige vers l'accueil
         header("Location: Accueil.php?erreur=mauvaisType");
     }
     $reponseDonneeRecu = gestionDonneeRecu($_FILES['nom']['tmp_name'], true);
+//Si on reçoit pas de fichier (donc une URL)
 } else {
     $reponseDonneeRecu = gestionDonneeRecu($_POST['nom']);
 }
