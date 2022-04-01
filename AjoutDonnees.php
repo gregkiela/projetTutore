@@ -59,7 +59,6 @@ $recapColonnes = $_SESSION['nomColonnes'];
     <div class="contenu">
         <div class="header">
             <h1>Bienvenue sur AutoGraph</h1>
-            <div class="barreFixe"></div>
         </div>
 
         <div class="barre"></div>
