@@ -205,7 +205,6 @@ $tabModalitesContraintes = array("GROUP BY", "ORDER BY", "WHERE");
 			}
 
 			monUrl += "&formalisme=" + formalisme + "&nbconsolidation=" + cptConso + "&nbContrainte=" + cptContr;
-			alert(monUrl);
 			window.open(monUrl);
 			//document.getElementById("img1").src = monUrl;
 			//test_valeurs_tableau(tabConsolidations,tabContraintes);
