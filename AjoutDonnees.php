@@ -13,7 +13,7 @@ $recapColonnes = $_SESSION['nomColonnes'];
     <link rel="icon" type="image/x-icon" href="./icoo.ico" />
     <link rel="shortcut icon" type="image/x-icon" href="./icoo.ico" />
     <script>
-        let nbURL = 1;
+        let nbURL = 0;
         let nbFichier = 0;
 
         function incrementValue(div) {
@@ -108,8 +108,7 @@ $recapColonnes = $_SESSION['nomColonnes'];
                     </div>
                     <div id="gestionURL">
                         <div id="URL">
-                            <input hidden id="nbURL" name="nbURL" type="number" value=1>
-                            <label>Lien URL : </label> <input type="url" name="url0" required="required"><br>
+                            <input hidden id="nbURL" name="nbURL" type="number" value=0>
                         </div>
                     </div>
                     <div id="gestionFicher">

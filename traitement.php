@@ -132,8 +132,8 @@ foreach($nomTables as $table)
     $requeteJoin.=" INNER JOIN $table USING($colonneChoisie)";
 }
 
-verifTable($link,$nomTableTotal);
 
+verifTable($link,$nomTableTotal);
 
 $requete = "CREATE TABLE $nomTableTotal AS $requeteJoin";
 

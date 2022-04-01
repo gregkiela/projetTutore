@@ -61,7 +61,7 @@ function tableauCouleurs()
 function typeConsolidationBd($consolidation, $lienBD)
 {
     $nomTableTotal = "total";
-    $requete = "SELECT COLUMN_NAME,COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = $nomTableTotal";
+    $requete = "SELECT COLUMN_NAME,COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$nomTableTotal'";
     $nomColonnes = mysqli_query($lienBD, $requete) or die("Impossible de récupérer le nom des colonnes");
 
     $type = '';
