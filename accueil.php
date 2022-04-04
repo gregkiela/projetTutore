@@ -93,8 +93,6 @@
             </nav>
 
             <div class="lesSelections">
-                <h3>CSV : https://www.data.gouv.fr/fr/datasets/r/f146c6a7-e215-4214-a250-399c6309f9a0</h3>
-                <h3>XML : https://www.data.gouv.fr/fr/datasets/r/1e31b17b-c467-43a1-b0a9-20fc862911f1</h3>
                 <form action="premierTraitement.php" method="POST" enctype="multipart/form-data">
                     <label>Quelle est la source des données ?</label>
                     <select name="choixTypeSourceDonnees" id="choixTypeSourceDonnees">
